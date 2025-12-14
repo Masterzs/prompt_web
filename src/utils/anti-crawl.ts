@@ -52,7 +52,7 @@ class RateLimiter {
 }
 
 // 全局频率限制器
-const rateLimiter = new RateLimiter(20, 60000) // 每分钟最多20次请求
+const rateLimiter = new RateLimiter(50, 60000) // 每分钟最多20次请求
 
 // 定期清理过期记录
 setInterval(() => rateLimiter.cleanup(), 60000)

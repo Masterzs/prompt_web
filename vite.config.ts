@@ -3,9 +3,14 @@ import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 
 // 根据环境变量设置 base 路径
-// 如果设置了 GITHUB_REPOSITORY 环境变量，使用仓库名作为 base
-// 否则根据 NODE_ENV 判断：生产环境默认使用 '/prompt_web/'，开发环境使用 '/'
+// 优先级：VITE_BASE_PATH > GITHUB_REPOSITORY > 默认值
 const getBasePath = () => {
+  // 1. 优先使用手动指定的环境变量
+  if (process.env.VITE_BASE_PATH) {
+    return process.env.VITE_BASE_PATH
+  }
+  
+  // 2. 如果在 GitHub Actions 中，从 GITHUB_REPOSITORY 获取仓库名
   if (process.env.GITHUB_REPOSITORY) {
     const repoName = process.env.GITHUB_REPOSITORY.split('/')[1]
     // 如果是 username.github.io 格式，使用根路径
@@ -14,11 +19,8 @@ const getBasePath = () => {
     }
     return `/${repoName}/`
   }
-  // 可以通过环境变量手动指定
-  if (process.env.VITE_BASE_PATH) {
-    return process.env.VITE_BASE_PATH
-  }
-  // 默认：生产环境使用仓库名，开发环境使用根路径
+  
+  // 3. 默认值：生产环境使用 '/prompt_web/'，开发环境使用 '/'
   return process.env.NODE_ENV === 'production' ? '/prompt_web/' : '/'
 }
 

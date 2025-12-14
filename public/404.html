@@ -147,7 +147,7 @@
         </p>
         
         <div>
-            <a href="/" class="btn">返回首页</a>
+            <a href="/prompt_web/" class="btn">返回首页</a>
             <button onclick="history.back()" class="btn btn-secondary">返回上页</button>
         </div>
         
@@ -164,61 +164,68 @@
     </div>
     
     <script>
+        // SPA 路由支持：重定向到 index.html
+        // 获取当前路径，去除 base 路径（/prompt_web/）
+        const path = window.location.pathname;
+        const basePath = '/prompt_web/';
+        
+        // 如果路径不是根路径，尝试重定向到 index.html
+        if (path !== basePath && path !== '/' && !path.endsWith('.html')) {
+            // 保存原始路径到 sessionStorage，以便应用可以恢复路由
+            sessionStorage.setItem('redirectPath', path);
+            // 重定向到 index.html
+            window.location.replace(basePath + 'index.html');
+        }
+        
         // 添加一些交互效果
         document.addEventListener('DOMContentLoaded', function() {
             const container = document.querySelector('.error-container');
             const code = document.querySelector('.error-code');
             
             // 鼠标悬停效果
-            container.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-5px)';
-                this.style.boxShadow = '0 25px 50px rgba(0, 0, 0, 0.15)';
-            });
-            
-            container.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-                this.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.1)';
-            });
-            
-            // 错误代码数字动画
-            let currentNumber = 0;
-            const targetNumber = 404;
-            const duration = 2000;
-            const startTime = Date.now();
-            
-            function animateNumber() {
-                const elapsed = Date.now() - startTime;
-                const progress = Math.min(elapsed / duration, 1);
+            if (container) {
+                container.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.boxShadow = '0 25px 50px rgba(0, 0, 0, 0.15)';
+                });
                 
-                // 使用缓动函数
-                const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-                currentNumber = Math.floor(targetNumber * easeOutQuart);
-                
-                code.textContent = currentNumber.toString().padStart(3, '0');
-                
-                if (progress < 1) {
-                    requestAnimationFrame(animateNumber);
-                }
+                container.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.1)';
+                });
             }
             
-            animateNumber();
+            // 错误代码数字动画
+            if (code) {
+                let currentNumber = 0;
+                const targetNumber = 404;
+                const duration = 2000;
+                const startTime = Date.now();
+                
+                function animateNumber() {
+                    const elapsed = Date.now() - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    // 使用缓动函数
+                    const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+                    currentNumber = Math.floor(targetNumber * easeOutQuart);
+                    
+                    code.textContent = currentNumber.toString().padStart(3, '0');
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(animateNumber);
+                    }
+                }
+                
+                animateNumber();
+            }
             
             // 添加键盘快捷键
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
-                    window.location.href = '/';
+                    window.location.href = basePath;
                 }
             });
-        });
-        
-        // 防止右键菜单（可选的复制保护）
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-        });
-        
-        // 防止文本选择（可选的复制保护）
-        document.addEventListener('selectstart', function(e) {
-            e.preventDefault();
         });
     </script>
 </body>
