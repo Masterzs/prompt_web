@@ -26,13 +26,9 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
   const resolveMediaPath = (file: string, mediaType: 'image' | 'video'): string => {
     if (!file || typeof file !== 'string') return ''
     
-    // 计算 base 路径：优先使用构建时注入的 BASE_URL，否则兜底 /prompt_web（生产）或 /
-    const rawBase = (import.meta as any)?.env?.BASE_URL
-    const basePath = rawBase
-      ? String(rawBase).replace(/\/$/, '')
-      : (typeof window !== 'undefined' && window.location.pathname.startsWith('/prompt_web'))
-        ? '/prompt_web'
-        : '/prompt_web'
+    // 计算 base 路径：优先使用构建时注入的 BASE_URL，兜底 '/'
+    const rawBase = (import.meta as any)?.env?.BASE_URL ?? '/'
+    const basePath = String(rawBase).replace(/\/$/, '')
 
     const mediaRoot = mediaType === 'video' ? '/assets/video/' : '/assets/image/'
 
