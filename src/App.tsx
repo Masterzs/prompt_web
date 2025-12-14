@@ -59,9 +59,9 @@ function App() {
         }
       })
 
-      setPrompts(data)
-      setFilteredPrompts(data)
-      setLoading(false)
+    setPrompts(data)
+    setFilteredPrompts(data)
+    setLoading(false)
     }, 'Failed to load prompts data')
   }, [])
 
