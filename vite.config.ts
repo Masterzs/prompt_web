@@ -5,10 +5,8 @@ import { resolve } from 'path'
 // https://vitejs.dev/config/
 export default defineConfig({
   // 关键配置：GitHub Pages 部署必须设置 base 路径
-  // 仓库名是 prompt_web，所以 base 设置为 '/prompt_web/'
-  // 注意：前后都要有斜杠
-  // 这是 GitHub Pages 部署的关键配置，必须设置！
-  base: '/prompt_web/',
+  // 默认生产使用 '/prompt_web/'；本地如需根路径可设置 VITE_BASE_PATH='/'
+  base: process.env.VITE_BASE_PATH ?? (process.env.NODE_ENV === 'production' ? '/prompt_web/' : '/'),
   plugins: [react()],
   resolve: {
     alias: {

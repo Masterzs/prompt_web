@@ -12,7 +12,7 @@ interface SearchBarProps {
 export default function SearchBar({ onSearch, placeholder = "搜索..." }: SearchBarProps) {
   const [query, setQuery] = useState('')
   const [error, setError] = useState<string>('')
-  const debounceTimer = useRef<NodeJS.Timeout | null>(null)
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const lastSearchTime = useRef<number>(0)
 
   // 防抖处理

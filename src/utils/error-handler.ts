@@ -32,13 +32,17 @@ class ErrorHandler {
       this.errors.shift()
     }
 
+    // 环境检测：兼容缺少类型声明的场景
+    const isDev = typeof import.meta !== 'undefined' && (import.meta as any).env?.DEV
+    const isProd = typeof import.meta !== 'undefined' && (import.meta as any).env?.PROD
+
     // 开发环境输出到控制台
-    if (import.meta.env.DEV) {
+    if (isDev) {
       console.error('Error logged:', appError)
     }
 
     // 生产环境可以发送到错误追踪服务
-    if (import.meta.env.PROD) {
+    if (isProd) {
       // 这里可以集成 Sentry、LogRocket 等服务
       // this.sendToErrorTracking(appError)
     }

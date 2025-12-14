@@ -17,26 +17,6 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
   const [flipped, setFlipped] = useState(false)
   const [currentImage, setCurrentImage] = useState(0)
 
-  const categoryImageMap: Record<string, string> = {
-    writing: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb?q=80&w=1200&auto=format&fit=crop',
-    drawing: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=1200&auto=format&fit=crop',
-    script: 'https://images.unsplash.com/photo-1517511620798-cec17d828004?q=80&w=1200&auto=format&fit=crop',
-    video: 'https://images.unsplash.com/photo-1517519014922-8d8d5dfb8f78?q=80&w=1200&auto=format&fit=crop',
-    marketing: 'https://images.unsplash.com/photo-1557800636-894a64c1696f?q=80&w=1200&auto=format&fit=crop',
-    education: 'https://images.unsplash.com/photo-1517520287167-4bbf64a00d66?q=80&w=1200&auto=format&fit=crop',
-    business: 'https://images.unsplash.com/photo-1556767576-cffae3be7d96?q=80&w=1200&auto=format&fit=crop',
-    creative: 'https://images.unsplash.com/photo-1485827404703-89b55f04f17b?q=80&w=1200&auto=format&fit=crop',
-    productivity: 'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?q=80&w=1200&auto=format&fit=crop',
-    other: 'https://images.unsplash.com/photo-1518972559570-7cc1309f3229?q=80&w=1200&auto=format&fit=crop',
-    // 中文分类兜底
-    写作: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb?q=80&w=1200&auto=format&fit=crop',
-    绘图: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=1200&auto=format&fit=crop',
-    剧本: 'https://images.unsplash.com/photo-1517511620798-cec17d828004?q=80&w=1200&auto=format&fit=crop',
-    视频: 'https://images.unsplash.com/photo-1517519014922-8d8d5dfb8f78?q=80&w=1200&auto=format&fit=crop',
-    电商: 'https://images.unsplash.com/photo-1557800636-894a64c1696f?q=80&w=1200&auto=format&fit=crop',
-    社交媒体: 'https://images.unsplash.com/photo-1551434677-5f53eb0b3d87?q=80&w=1200&auto=format&fit=crop'
-  }
-
   // 解析媒体文件路径
   // location 支持多种格式：
   // 1. 完整URL: http://... 或 https://...
@@ -46,6 +26,9 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
   const resolveMediaPath = (file: string, mediaType: 'image' | 'video'): string => {
     if (!file || typeof file !== 'string') return ''
     
+    const basePath = ((import.meta as any)?.env?.BASE_URL || '/').replace(/\/$/, '')
+    const mediaRoot = mediaType === 'video' ? '/assets/video/' : '/assets/image/'
+
     // 清理文件路径
     const cleanedFile = file.trim()
     if (!cleanedFile) return ''
@@ -61,7 +44,8 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
       if (!/^\/[^<>"|?*\x00-\x1f]+$/.test(cleanedFile)) {
         return ''
       }
-      return cleanedFile
+      // 为绝对路径加上 basePath，适配 GitHub Pages 子路径
+      return `${basePath}${cleanedFile}`
     }
     
     // 相对路径，验证路径安全性（允许路径分隔符 /，但不允许反斜杠 \）
@@ -71,9 +55,8 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
       return ''
     }
     
-    // 相对路径，根据mediaType添加基础路径
-    const basePath = mediaType === 'video' ? '/assets/video/' : '/assets/image/'
-    return basePath + cleanedFile
+    // 相对路径，根据mediaType添加基础路径，并加上 base 路径
+    return `${basePath}${mediaRoot}${cleanedFile}`
   }
 
   // 安全获取媒体文件列表
