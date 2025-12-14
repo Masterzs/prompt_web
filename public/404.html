@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>页面未找到 - Prompt Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+        
+        .error-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            max-width: 500px;
+            margin: 2rem;
+        }
+        
+        .error-code {
+            font-size: 6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            line-height: 1;
+        }
+        
+        .error-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #2d3748;
+        }
+        
+        .error-message {
+            font-size: 1rem;
+            color: #718096;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .error-illustration {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            opacity: 0.7;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            margin: 0.5rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        
+        .btn-secondary:hover {
+            background: #cbd5e0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .suggestions {
+            margin-top: 2rem;
+            text-align: left;
+        }
+        
+        .suggestions h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: #2d3748;
+        }
+        
+        .suggestions ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .suggestions li {
+            margin-bottom: 0.5rem;
+            color: #718096;
+        }
+        
+        .suggestions li::before {
+            content: "→";
+            color: #667eea;
+            margin-right: 0.5rem;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 600px) {
+            .error-container {
+                padding: 2rem;
+                margin: 1rem;
+            }
+            
+            .error-code {
+                font-size: 4rem;
+            }
+            
+            .error-title {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-illustration">🤖</div>
+        <div class="error-code">404</div>
+        <h1 class="error-title">页面迷失在数字世界</h1>
+        <p class="error-message">
+            抱歉，您访问的页面不存在或已被移除。<br>
+            就像AI有时会产生幻觉一样，这个页面可能也只是个美丽的错误。
+        </p>
+        
+        <div>
+            <a href="/" class="btn">返回首页</a>
+            <button onclick="history.back()" class="btn btn-secondary">返回上页</button>
+        </div>
+        
+        <div class="suggestions">
+            <h3>您可能想寻找：</h3>
+            <ul>
+                <li>AI绘画提示词</li>
+                <li>短视频创作脚本</li>
+                <li>技术博客写作助手</li>
+                <li>产品营销文案</li>
+                <li>学术论文写作指导</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        // 添加一些交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.error-container');
+            const code = document.querySelector('.error-code');
+            
+            // 鼠标悬停效果
+            container.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+                this.style.boxShadow = '0 25px 50px rgba(0, 0, 0, 0.15)';
+            });
+            
+            container.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.1)';
+            });
+            
+            // 错误代码数字动画
+            let currentNumber = 0;
+            const targetNumber = 404;
+            const duration = 2000;
+            const startTime = Date.now();
+            
+            function animateNumber() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // 使用缓动函数
+                const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+                currentNumber = Math.floor(targetNumber * easeOutQuart);
+                
+                code.textContent = currentNumber.toString().padStart(3, '0');
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animateNumber);
+                }
+            }
+            
+            animateNumber();
+            
+            // 添加键盘快捷键
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    window.location.href = '/';
+                }
+            });
+        });
+        
+        // 防止右键菜单（可选的复制保护）
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+        
+        // 防止文本选择（可选的复制保护）
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+        });
+    </script>
+</body>
+</html>

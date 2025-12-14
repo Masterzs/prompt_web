@@ -1,0 +1,40 @@
+# robots.txt - Prompt Hub
+# 控制搜索引擎爬虫访问
+
+User-agent: *
+# 禁止访问敏感目录
+Disallow: /admin/
+Disallow: /api/
+Disallow: /config/
+Disallow: /scripts/
+Disallow: /*.json$
+Disallow: /*.js$
+Disallow: /*.ts$
+
+# 允许访问主要内容和资源
+Allow: /assets/
+Allow: /src/
+Allow: /dist/
+
+# 设置爬取延迟，减轻服务器压力
+Crawl-delay: 10
+
+# 指定sitemap位置
+Sitemap: https://prompthub.example.com/sitemap.xml
+
+# 特定爬虫设置
+User-agent: Googlebot
+Crawl-delay: 5
+
+User-agent: Bingbot
+Crawl-delay: 8
+
+User-agent: Baiduspider
+Crawl-delay: 15
+
+# 禁止某些恶意爬虫
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /

@@ -1,0 +1,31 @@
+# Netlify重定向规则
+# 用于处理路由和防止爬虫
+
+# 主页重定向
+/ /index.html 200
+
+# 搜索页面
+/search/* /index.html 200
+
+# 标签页面
+/tag/* /index.html 200
+
+# 分类页面
+/category/* /index.html 200
+
+# 平台页面
+/platform/* /index.html 200
+
+# 详情页面
+/prompt/* /index.html 200
+
+# 防止爬虫访问敏感路径
+/robots.txt /robots.txt 200
+/sitemap.xml /sitemap.xml 200
+/.git/* /404.html 404
+/admin/* /404.html 404
+/api/* /404.html 404
+/config/* /404.html 404
+
+# 404页面
+/* /404.html 404
