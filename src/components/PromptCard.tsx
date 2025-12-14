@@ -26,7 +26,14 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
   const resolveMediaPath = (file: string, mediaType: 'image' | 'video'): string => {
     if (!file || typeof file !== 'string') return ''
     
-    const basePath = ((import.meta as any)?.env?.BASE_URL || '/').replace(/\/$/, '')
+    // 计算 base 路径：优先使用构建时注入的 BASE_URL，否则兜底 /prompt_web（生产）或 /
+    const rawBase = (import.meta as any)?.env?.BASE_URL
+    const basePath = rawBase
+      ? String(rawBase).replace(/\/$/, '')
+      : (typeof window !== 'undefined' && window.location.pathname.startsWith('/prompt_web'))
+        ? '/prompt_web'
+        : '/prompt_web'
+
     const mediaRoot = mediaType === 'video' ? '/assets/video/' : '/assets/image/'
 
     // 清理文件路径
@@ -40,6 +47,10 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
     }
     
     if (cleanedFile.startsWith('/')) {
+      // 已经包含 basePath 的情况，直接返回
+      if (cleanedFile.startsWith(`${basePath}/`)) {
+        return cleanedFile
+      }
       // 验证绝对路径不包含危险字符（允许路径分隔符）
       if (!/^\/[^<>"|?*\x00-\x1f]+$/.test(cleanedFile)) {
         return ''
@@ -56,7 +67,8 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
     }
     
     // 相对路径，根据mediaType添加基础路径，并加上 base 路径
-    return `${basePath}${mediaRoot}${cleanedFile}`
+    const normalized = cleanedFile.replace(/^\/+/, '')
+    return `${basePath}${mediaRoot}${normalized}`
   }
 
   // 安全获取媒体文件列表
