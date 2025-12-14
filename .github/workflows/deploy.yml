@@ -36,6 +36,14 @@ jobs:
         env:
           NODE_ENV: production
           VITE_BASE_PATH: '/prompt_web/'
+      
+      - name: Verify build output
+        run: |
+          echo "Checking build output..."
+          ls -la dist/
+          echo "Checking index.html..."
+          cat dist/index.html | grep -E "(script|link)" || echo "No script/link tags found"
+          echo "Build verification complete"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
