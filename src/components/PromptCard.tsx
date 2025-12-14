@@ -28,9 +28,12 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
     
     // 计算 base 路径：优先使用构建时注入的 BASE_URL，兜底 '/'
     const rawBase = (import.meta as any)?.env?.BASE_URL ?? '/'
-    const basePath = String(rawBase).replace(/\/$/, '')
+    const basePath = `${String(rawBase).replace(/\/+$/, '')}/` // 确保末尾有且仅有一个斜杠
+    const mediaRoot = mediaType === 'video' ? 'assets/video/' : 'assets/image/'
 
-    const mediaRoot = mediaType === 'video' ? '/assets/video/' : '/assets/image/'
+    const joinPath = (base: string, p: string) => {
+      return `${base.replace(/\/+$/, '')}/${p.replace(/^\/+/, '')}`
+    }
 
     // 清理文件路径
     const cleanedFile = file.trim()
@@ -43,16 +46,12 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
     }
     
     if (cleanedFile.startsWith('/')) {
-      // 已经包含 basePath 的情况，直接返回
-      if (cleanedFile.startsWith(`${basePath}/`)) {
-        return cleanedFile
-      }
       // 验证绝对路径不包含危险字符（允许路径分隔符）
       if (!/^\/[^<>"|?*\x00-\x1f]+$/.test(cleanedFile)) {
         return ''
       }
-      // 为绝对路径加上 basePath，适配 GitHub Pages 子路径
-      return `${basePath}${cleanedFile}`
+      // 为绝对路径加上 basePath，适配子路径和本地
+      return joinPath(basePath, cleanedFile)
     }
     
     // 相对路径，验证路径安全性（允许路径分隔符 /，但不允许反斜杠 \）
@@ -64,7 +63,7 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
     
     // 相对路径，根据mediaType添加基础路径，并加上 base 路径
     const normalized = cleanedFile.replace(/^\/+/, '')
-    return `${basePath}${mediaRoot}${normalized}`
+    return joinPath(basePath, `${mediaRoot}${normalized}`)
   }
 
   // 安全获取媒体文件列表
