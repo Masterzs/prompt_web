@@ -84,17 +84,14 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
     return videoFiles.map(file => resolveMediaPath(file, 'video')).filter(Boolean)
   }, [])
 
-  // 优先使用 location 中的图片
-  // 如果 location 中没有图片，才尝试使用 imageUrl
-  // 只有在完全没有图片时，才使用分类默认图（但不在初始加载时使用）
+  // 优先使用 location 中的图片；如果没有，再尝试 imageUrl（同样走路径解析，适配 basePath）
   let displayImages: string[] = []
   
   if (resolvedImages.length > 0) {
-    // 有 location 图片，优先使用
     displayImages = resolvedImages
   } else if (prompt.imageUrl) {
-    // 没有 location 图片，尝试使用 imageUrl
-    displayImages = [prompt.imageUrl]
+    const fallbackImg = resolveMediaPath(prompt.imageUrl, 'image')
+    displayImages = fallbackImg ? [fallbackImg] : []
   }
   // 如果既没有 location 也没有 imageUrl，displayImages 保持为空数组
   // 这样 noMedia 会为 true，直接显示文字内容，而不是显示默认图
