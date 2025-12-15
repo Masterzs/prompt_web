@@ -138,14 +138,7 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
     setExpanded(prev => !prev)
   }
   
-  // 移动端触摸结束处理函数（使用onTouchEnd减少延迟）
-  const handleTouchEndExpand = (e: React.TouchEvent) => {
-    e.stopPropagation()
-    // 不阻止默认行为，减少延迟
-    handleExpand()
-  }
-  
-  // 处理点击事件（桌面端）
+  // 处理点击事件（桌面端和移动端）
   const handleClickExpand = (e: React.MouseEvent) => {
     e.stopPropagation()
     handleExpand()
@@ -290,39 +283,58 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
               <pre className="text-sm text-gray-800 whitespace-pre-wrap font-mono leading-relaxed">{prompt.content}</pre>
             </div>
             {prompt.content.length > 200 && (
-              <button 
-                onClick={handleClickExpand}
-                onTouchEnd={handleTouchEndExpand}
-                className={`mt-3 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium ${
-                  expanded 
-                    ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300 border border-gray-300' 
-                    : 'bg-blue-50 text-blue-700 hover:bg-blue-100 active:bg-blue-200 border border-blue-200'
-                }`}
-                style={{ 
-                  touchAction: 'manipulation', 
-                  minHeight: '48px',
-                  WebkitTapHighlightColor: 'rgba(0, 0, 0, 0.1)',
-                  pointerEvents: 'auto',
-                  userSelect: 'none',
-                  WebkitUserSelect: 'none',
+              <div
+                className="mt-3"
+                style={{
+                  touchAction: 'manipulation',
+                  position: 'relative',
                   zIndex: 100,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  width: '100%'
+                  pointerEvents: 'auto'
                 }}
               >
-                {expanded ? (
-                  <>
-                    <ChevronUp className="w-5 h-5 pointer-events-none" />
-                    <span className="pointer-events-none">收起内容</span>
-                  </>
-                ) : (
-                  <>
-                    <ChevronDown className="w-5 h-5 pointer-events-none" />
-                    <span className="pointer-events-none">展开查看更多</span>
-                  </>
-                )}
-              </button>
+                <button 
+                  onClick={handleClickExpand}
+                  onTouchStart={(e) => {
+                    e.stopPropagation()
+                    e.preventDefault()
+                    handleExpand()
+                  }}
+                  onTouchEnd={(e) => {
+                    e.stopPropagation()
+                  }}
+                  className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium ${
+                    expanded 
+                      ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300 border border-gray-300' 
+                      : 'bg-blue-50 text-blue-700 hover:bg-blue-100 active:bg-blue-200 border border-blue-200'
+                  }`}
+                  style={{ 
+                    touchAction: 'manipulation', 
+                    minHeight: '48px',
+                    WebkitTapHighlightColor: 'rgba(0, 0, 0, 0.1)',
+                    pointerEvents: 'auto',
+                    userSelect: 'none',
+                    WebkitUserSelect: 'none',
+                    cursor: 'pointer',
+                    display: 'block',
+                    width: '100%',
+                    margin: 0,
+                    border: '1px solid',
+                    position: 'relative'
+                  }}
+                >
+                  {expanded ? (
+                    <>
+                      <ChevronUp className="w-5 h-5 pointer-events-none inline-block" />
+                      <span className="pointer-events-none">收起内容</span>
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="w-5 h-5 pointer-events-none inline-block" />
+                      <span className="pointer-events-none">展开查看更多</span>
+                    </>
+                  )}
+                </button>
+              </div>
             )}
           </div>
           <div className="flex flex-wrap gap-2 mb-4">
@@ -380,10 +392,21 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
               touchAction: 'pan-y pinch-zoom'
             }}
             onTouchStart={(e) => {
-              // 如果触摸目标是按钮，不阻止事件
+              // 如果触摸目标是按钮或其父元素，不阻止事件
+              const target = e.target as HTMLElement
+              const button = target.closest('button')
+              if (button) {
+                e.stopPropagation()
+                // 让按钮自己处理，不阻止
+                return
+              }
+            }}
+            onTouchMove={(e) => {
+              // 如果触摸目标是按钮，阻止滚动
               const target = e.target as HTMLElement
               if (target.closest('button')) {
-                return // 让按钮自己处理
+                e.preventDefault()
+                e.stopPropagation()
               }
             }}
           >
@@ -397,39 +420,58 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
                 <pre className="text-sm text-gray-800 whitespace-pre-wrap font-mono leading-relaxed">{prompt.content}</pre>
               </div>
               {prompt.content.length > 200 && (
-                <button 
-                  onClick={handleClickExpand}
-                  onTouchEnd={handleTouchEndExpand}
-                  className={`mt-3 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium ${
-                    expanded 
-                      ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300 border border-gray-300' 
-                      : 'bg-blue-50 text-blue-700 hover:bg-blue-100 active:bg-blue-200 border border-blue-200'
-                  }`}
-                  style={{ 
-                    touchAction: 'manipulation', 
-                    minHeight: '48px',
-                    WebkitTapHighlightColor: 'rgba(0, 0, 0, 0.1)',
-                    pointerEvents: 'auto',
-                    userSelect: 'none',
-                    WebkitUserSelect: 'none',
+                <div
+                  className="mt-3"
+                  style={{
+                    touchAction: 'manipulation',
+                    position: 'relative',
                     zIndex: 100,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    width: '100%'
+                    pointerEvents: 'auto'
                   }}
                 >
-                  {expanded ? (
-                    <>
-                      <ChevronUp className="w-5 h-5 pointer-events-none" />
-                      <span className="pointer-events-none">收起内容</span>
-                    </>
-                  ) : (
-                    <>
-                      <ChevronDown className="w-5 h-5 pointer-events-none" />
-                      <span className="pointer-events-none">展开查看更多</span>
-                    </>
-                  )}
-                </button>
+                  <button 
+                    onClick={handleClickExpand}
+                    onTouchStart={(e) => {
+                      e.stopPropagation()
+                      e.preventDefault()
+                      handleExpand()
+                    }}
+                    onTouchEnd={(e) => {
+                      e.stopPropagation()
+                    }}
+                    className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium ${
+                      expanded 
+                        ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300 border border-gray-300' 
+                        : 'bg-blue-50 text-blue-700 hover:bg-blue-100 active:bg-blue-200 border border-blue-200'
+                    }`}
+                    style={{ 
+                      touchAction: 'manipulation', 
+                      minHeight: '48px',
+                      WebkitTapHighlightColor: 'rgba(0, 0, 0, 0.1)',
+                      pointerEvents: 'auto',
+                      userSelect: 'none',
+                      WebkitUserSelect: 'none',
+                      cursor: 'pointer',
+                      display: 'block',
+                      width: '100%',
+                      margin: 0,
+                      border: '1px solid',
+                      position: 'relative'
+                    }}
+                  >
+                    {expanded ? (
+                      <>
+                        <ChevronUp className="w-5 h-5 pointer-events-none inline-block" />
+                        <span className="pointer-events-none">收起内容</span>
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="w-5 h-5 pointer-events-none inline-block" />
+                        <span className="pointer-events-none">展开查看更多</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               )}
             </div>
             <div className="flex flex-wrap gap-2 mb-4">
