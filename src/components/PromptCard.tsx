@@ -246,8 +246,7 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
               userSelect: 'none',
               WebkitUserSelect: 'none',
               pointerEvents: 'auto',
-              WebkitTouchCallout: 'none',
-              WebkitUserDrag: 'none'
+              WebkitTouchCallout: 'none'
             }}
           />
         )}
