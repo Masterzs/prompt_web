@@ -110,11 +110,19 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
     window.open(prompt.sourceUrl, '_blank', 'noopener,noreferrer')
   }
 
-  const toggleExpanded = () => {
+  const toggleExpanded = (e?: React.MouseEvent | React.TouchEvent) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
     setExpanded(!expanded)
   }
 
-  const toggleFlipped = () => {
+  const toggleFlipped = (e?: React.MouseEvent | React.TouchEvent) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
     setFlipped(prev => !prev)
   }
 
@@ -224,7 +232,19 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
               <pre className="text-sm text-gray-800 whitespace-pre-wrap font-mono leading-relaxed">{prompt.content}</pre>
             </div>
             {prompt.content.length > 200 && (
-              <button onClick={toggleExpanded} className="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1 transition-colors">
+              <button 
+                onClick={toggleExpanded}
+                onTouchEnd={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  toggleExpanded(e)
+                }}
+                onTouchStart={(e) => {
+                  e.stopPropagation()
+                }}
+                className="mt-2 text-blue-600 hover:text-blue-800 active:text-blue-900 text-sm font-medium flex items-center gap-1 transition-colors touch-manipulation relative z-10"
+                style={{ touchAction: 'manipulation', minHeight: '44px', padding: '8px 0', WebkitTapHighlightColor: 'transparent' }}
+              >
                 {expanded ? (<><ChevronUp className="w-4 h-4" />收起</>) : (<><ChevronDown className="w-4 h-4" />展开查看更多</>)}
               </button>
             )}
@@ -264,7 +284,7 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
         <div className={`h-full transition-transform duration-500 [transform-style:preserve-3d] ${flipped ? 'rotate-y-180' : ''}`}>
           {renderMedia()}
 
-          <div className="absolute inset-0 bg-white p-4 sm:p-6 overflow-y-auto [backface-visibility:hidden] rotate-y-180">
+          <div className="absolute inset-0 bg-white p-4 sm:p-6 overflow-y-auto [backface-visibility:hidden] rotate-y-180" style={{ zIndex: 1 }}>
             <div className="flex items-start justify-between mb-3">
               <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 flex-1">{prompt.title}</h3>
               <span className="ml-3 px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full whitespace-nowrap">{prompt.category}</span>
@@ -275,7 +295,19 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
                 <pre className="text-sm text-gray-800 whitespace-pre-wrap font-mono leading-relaxed">{prompt.content}</pre>
               </div>
               {prompt.content.length > 200 && (
-                <button onClick={toggleExpanded} className="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1 transition-colors">
+                <button 
+                  onClick={toggleExpanded}
+                  onTouchEnd={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    toggleExpanded(e)
+                  }}
+                  onTouchStart={(e) => {
+                    e.stopPropagation()
+                  }}
+                  className="mt-2 text-blue-600 hover:text-blue-800 active:text-blue-900 text-sm font-medium flex items-center gap-1 transition-colors touch-manipulation relative z-10"
+                  style={{ touchAction: 'manipulation', minHeight: '44px', padding: '8px 0', WebkitTapHighlightColor: 'transparent' }}
+                >
                   {expanded ? (<><ChevronUp className="w-4 h-4" />收起</>) : (<><ChevronDown className="w-4 h-4" />展开查看更多</>)}
                 </button>
               )}
@@ -295,7 +327,19 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
         </div>
 
         {!noMedia && (
-          <button onClick={toggleFlipped} className="absolute top-3 right-3 z-10 px-2 py-1 bg-white/90 text-gray-800 rounded-md shadow-sm hover:bg-white transition-colors flex items-center gap-1 text-xs">
+          <button 
+            onClick={toggleFlipped}
+            onTouchEnd={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              toggleFlipped(e)
+            }}
+            onTouchStart={(e) => {
+              e.stopPropagation()
+            }}
+            className="absolute top-3 right-3 z-20 px-3 py-2 bg-white/90 text-gray-800 rounded-md shadow-sm hover:bg-white active:bg-white transition-colors flex items-center gap-1 text-xs touch-manipulation"
+            style={{ touchAction: 'manipulation', minHeight: '44px', minWidth: '44px', WebkitTapHighlightColor: 'transparent' }}
+          >
             <FlipHorizontal className="w-4 h-4" />
             反转
           </button>

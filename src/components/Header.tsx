@@ -20,6 +20,23 @@ export default function Header({ onOpenSettings }: HeaderProps) {
           </div>
           
           <div className="flex items-center space-x-4">
+            {/* AI交流学习群图片 */}
+            <div className="flex flex-col items-center space-y-1">
+              <a
+                href="https://github.com/Masterzs/prompt_web"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center hover:opacity-80 transition-opacity"
+              >
+                <img
+                  src={`${import.meta.env.BASE_URL}微信图片_20251214200014_40_2.jpg`}
+                  alt="AI交流学习群"
+                  className="h-12 w-12 object-cover rounded-lg"
+                />
+              </a>
+              <span className="text-xs text-gray-600 font-medium">AI交流学习群</span>
+            </div>
+            
             <button
               onClick={onOpenSettings}
               className="text-gray-500 hover:text-gray-700"
@@ -28,8 +45,8 @@ export default function Header({ onOpenSettings }: HeaderProps) {
               <Settings className="h-6 w-6" />
             </button>
             <a 
-              href="https://github.com/your-username/prompt-hub" 
-              target="_blank" 
+              href="https://github.com/Masterzs/prompt_web" 
+              target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-gray-500"
             >
