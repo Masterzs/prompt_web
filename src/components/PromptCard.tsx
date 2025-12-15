@@ -2,9 +2,6 @@ import { useEffect, useState } from 'react'
 import { ExternalLink, Copy, Check, ChevronDown, ChevronUp, FlipHorizontal } from 'lucide-react'
 import { copyToClipboard } from '../utils/copy'
 import { Prompt } from '../types'
-import { sanitizeUrl } from '../utils/validator'
-import { withAsyncErrorHandling, errorHandler } from '../utils/error-handler'
-import { safeExecute } from '../utils/error-handler'
 
 interface PromptCardProps {
   prompt: Prompt
@@ -17,6 +14,26 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
   const [flipped, setFlipped] = useState(false)
   const [currentImage, setCurrentImage] = useState(0)
 
+  const categoryImageMap: Record<string, string> = {
+    writing: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb?q=80&w=1200&auto=format&fit=crop',
+    drawing: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=1200&auto=format&fit=crop',
+    script: 'https://images.unsplash.com/photo-1517511620798-cec17d828004?q=80&w=1200&auto=format&fit=crop',
+    video: 'https://images.unsplash.com/photo-1517519014922-8d8d5dfb8f78?q=80&w=1200&auto=format&fit=crop',
+    marketing: 'https://images.unsplash.com/photo-1557800636-894a64c1696f?q=80&w=1200&auto=format&fit=crop',
+    education: 'https://images.unsplash.com/photo-1517520287167-4bbf64a00d66?q=80&w=1200&auto=format&fit=crop',
+    business: 'https://images.unsplash.com/photo-1556767576-cffae3be7d96?q=80&w=1200&auto=format&fit=crop',
+    creative: 'https://images.unsplash.com/photo-1485827404703-89b55f04f17b?q=80&w=1200&auto=format&fit=crop',
+    productivity: 'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?q=80&w=1200&auto=format&fit=crop',
+    other: 'https://images.unsplash.com/photo-1518972559570-7cc1309f3229?q=80&w=1200&auto=format&fit=crop',
+    // 中文分类兜底
+    写作: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb?q=80&w=1200&auto=format&fit=crop',
+    绘图: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=1200&auto=format&fit=crop',
+    剧本: 'https://images.unsplash.com/photo-1517511620798-cec17d828004?q=80&w=1200&auto=format&fit=crop',
+    视频: 'https://images.unsplash.com/photo-1517519014922-8d8d5dfb8f78?q=80&w=1200&auto=format&fit=crop',
+    电商: 'https://images.unsplash.com/photo-1557800636-894a64c1696f?q=80&w=1200&auto=format&fit=crop',
+    社交媒体: 'https://images.unsplash.com/photo-1551434677-5f53eb0b3d87?q=80&w=1200&auto=format&fit=crop'
+  }
+
   // 解析媒体文件路径
   // location 支持多种格式：
   // 1. 完整URL: http://... 或 https://...
@@ -24,93 +41,27 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
   // 3. 相对路径（含子目录）: gpt4o/filename.jpg -> /assets/image/gpt4o/filename.jpg
   // 4. 文件名: filename.jpg -> /assets/image/filename.jpg
   const resolveMediaPath = (file: string, mediaType: 'image' | 'video'): string => {
-    if (!file || typeof file !== 'string') return ''
-    
-    // 计算 base 路径：优先使用构建时注入的 BASE_URL，兜底 '/'
-    const rawBase = (import.meta as any)?.env?.BASE_URL ?? '/'
-    const basePath = `${String(rawBase).replace(/\/+$/, '')}/` // 确保末尾有且仅有一个斜杠
-    const mediaRoot = mediaType === 'video' ? 'assets/video/' : 'assets/image/'
-
-    const joinPath = (base: string, p: string) => {
-      return `${base.replace(/\/+$/, '')}/${p.replace(/^\/+/, '')}`
+    if (!file) return ''
+    // 完整URL或绝对路径，直接返回
+    if (file.startsWith('http://') || file.startsWith('https://') || file.startsWith('/')) {
+      return file
     }
-
-    // 清理文件路径
-    const cleanedFile = file.trim()
-    if (!cleanedFile) return ''
-    
-    // 完整URL或绝对路径，验证后返回
-    if (cleanedFile.startsWith('http://') || cleanedFile.startsWith('https://')) {
-      const sanitized = sanitizeUrl(cleanedFile)
-      return sanitized || ''
-    }
-    
-    if (cleanedFile.startsWith('/')) {
-      // 验证绝对路径不包含危险字符（允许路径分隔符）
-      if (!/^\/[^<>"|?*\x00-\x1f]+$/.test(cleanedFile)) {
-        return ''
-      }
-      // 为绝对路径加上 basePath，适配子路径和本地
-      return joinPath(basePath, cleanedFile)
-    }
-    
-    // 相对路径，验证路径安全性（允许路径分隔符 /，但不允许反斜杠 \）
-    // 允许：gpt4o/filename.jpg, banana/file.png, assets/image/...
-    // 禁止：..\file.jpg, C:\file.jpg
-    if (!/^[^<>"|?*\x00-\x1f\\]+$/.test(cleanedFile)) {
-      return ''
-    }
-    
-    // 检查路径是否已经包含 assets/image/ 或 assets/video/ 前缀
-    // 如果已经包含，直接加上 basePath 即可（去掉开头的斜杠后）
-    const normalized = cleanedFile.replace(/^\/+/, '')
-    if (normalized.startsWith('assets/image/') || normalized.startsWith('assets/video/')) {
-      // 路径已经包含 assets/ 前缀，直接拼接 basePath
-      return joinPath(basePath, normalized)
-    }
-    
-    // 相对路径，根据mediaType添加基础路径，并加上 base 路径
-    // 例如：gpt4o/filename.jpg -> /prompt_web/assets/image/gpt4o/filename.jpg
-    return joinPath(basePath, `${mediaRoot}${normalized}`)
+    // 相对路径，根据mediaType添加基础路径
+    const basePath = mediaType === 'video' ? '/assets/video/' : '/assets/image/'
+    return basePath + file
   }
 
-  // 安全获取媒体文件列表
-  const mediaFiles = safeExecute(() => {
-    if (!prompt?.location) return []
-    if (!Array.isArray(prompt.location)) return []
-    return prompt.location.filter((file): file is string => 
-      typeof file === 'string' && file.trim().length > 0
-    )
-  }, [])
+  const mediaFiles = prompt.location ?? []
+  const imageFiles = mediaFiles.filter(file => /\.(png|jpe?g|webp|gif|avif)$/i.test(file))
+  const videoFiles = mediaFiles.filter(file => /\.(mp4|webm|mov|mkv)$/i.test(file))
 
-  const imageFiles = safeExecute(() => {
-    return mediaFiles.filter(file => /\.(png|jpe?g|webp|gif|avif)$/i.test(file))
-  }, [])
+  const resolvedImages = imageFiles.map(file => resolveMediaPath(file, 'image'))
+  const resolvedVideos = videoFiles.map(file => resolveMediaPath(file, 'video'))
 
-  const videoFiles = safeExecute(() => {
-    return mediaFiles.filter(file => /\.(mp4|webm|mov|mkv)$/i.test(file))
-  }, [])
-
-  const resolvedImages = safeExecute(() => {
-    return imageFiles.map(file => resolveMediaPath(file, 'image')).filter(Boolean)
-  }, [])
-
-  const resolvedVideos = safeExecute(() => {
-    return videoFiles.map(file => resolveMediaPath(file, 'video')).filter(Boolean)
-  }, [])
-
-  // 优先使用 location 中的图片；如果没有，再尝试 imageUrl（同样走路径解析，适配 basePath）
-  let displayImages: string[] = []
-  
-  if (resolvedImages.length > 0) {
-    displayImages = resolvedImages
-  } else if (prompt.imageUrl) {
-    const fallbackImg = resolveMediaPath(prompt.imageUrl, 'image')
-    displayImages = fallbackImg ? [fallbackImg] : []
-  }
-  // 如果既没有 location 也没有 imageUrl，displayImages 保持为空数组
-  // 这样 noMedia 会为 true，直接显示文字内容，而不是显示默认图
-  
+  const fallbackImage = prompt.imageUrl || categoryImageMap[prompt.category] || categoryImageMap.other
+  const displayImages = resolvedImages.length > 0 && resolvedImages[0]
+    ? resolvedImages
+    : Array.from(new Set([fallbackImage].filter(Boolean)))
   const uniqueImagesList = Array.from(new Set(displayImages.filter(Boolean)))
   const hasVideo = resolvedVideos.length > 0
   const [images, setImages] = useState<string[]>(uniqueImagesList)
@@ -123,41 +74,25 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
   }, [prompt.id, uniqueImagesList.join('|')])
 
   const handleCopy = async () => {
-    await withAsyncErrorHandling(async () => {
-      if (!prompt?.content) {
-        throw new Error('No content to copy')
-      }
+    try {
       await copyToClipboard(prompt.content)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
-    }, 'Failed to copy content')
+    } catch (error) {
+      console.error('复制失败:', error)
+    }
   }
 
   const handleSourceClick = () => {
-    safeExecute(() => {
-      // 验证 URL
-      const safeUrl = sanitizeUrl(prompt.sourceUrl || '')
-      if (!safeUrl) {
-        errorHandler.logError(new Error('Invalid source URL'))
-        return
-      }
-
-      // 添加来源点击统计
-      if (typeof window !== 'undefined' && window.gtag) {
-        try {
-          window.gtag('event', 'click', {
-            event_category: 'prompt_source',
-            event_label: prompt.platform || 'unknown',
-            value: 1
-          })
-        } catch (error) {
-          // 统计失败不影响打开链接
-          errorHandler.logError(error instanceof Error ? error : new Error(String(error)))
-        }
-      }
-      
-      window.open(safeUrl, '_blank', 'noopener,noreferrer')
-    }, undefined)
+    // 添加来源点击统计
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'click', {
+        event_category: 'prompt_source',
+        event_label: prompt.platform,
+        value: 1
+      })
+    }
+    window.open(prompt.sourceUrl, '_blank', 'noopener,noreferrer')
   }
 
   const toggleExpanded = () => {
@@ -200,33 +135,21 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
     const isHero = index < 6
     const imgCount = images.length || 1
 
-    const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-      const failedSrc = (e.target as HTMLImageElement).src
-      console.warn('Image load failed:', failedSrc)
-      
+    const handleImageError = () => {
+      const failedSrc = images[currentImage]
       setImages(prev => {
-        // 移除失败的图片
-        const next = prev.filter(src => src !== failedSrc)
-        
-        // 如果还有图片，返回剩余的
-        if (next.length > 0) {
-          return Array.from(new Set(next))
-        }
-        
-        // 如果没有图片了，尝试使用 imageUrl（如果存在且不是失败的）
-        if (prompt.imageUrl && prompt.imageUrl !== failedSrc) {
-          return [prompt.imageUrl]
-        }
-        
-        // 不再回退到分类默认图，返回空数组（显示文字）
-        return []
+        const next = prev.filter((src, idx) => idx !== currentImage && src !== failedSrc)
+        if (next.length > 0) return Array.from(new Set(next))
+        const fallback = Array.from(
+          new Set(
+            [categoryImageMap[prompt.category], categoryImageMap.other].filter(
+              (v): v is string => Boolean(v)
+            )
+          )
+        )
+        return fallback.length > 0 ? fallback : []
       })
-      
-      // 如果当前图片索引超出范围，重置为0
-      setCurrentImage(prev => {
-        const remaining = images.filter(src => src !== failedSrc)
-        return prev >= remaining.length ? 0 : prev
-      })
+      setCurrentImage(0)
     }
 
     return (

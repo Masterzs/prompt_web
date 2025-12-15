@@ -6,9 +6,6 @@ import TagFilter from './components/TagFilter'
 import PromptCard from './components/PromptCard'
 import { Prompt } from './types'
 import { searchPrompts } from './utils/search'
-import { validatePrompts, validatePagination, validateSearchQuery } from './utils/validator'
-import { withAsyncErrorHandling, errorHandler } from './utils/error-handler'
-import { antiCrawlCheck } from './utils/anti-crawl'
 import promptsData from './data/prompts.json'
 import bananaData from './data/banana-prompts.json'
 import gpt4oData from './data/gpt4o-prompts.json'
@@ -27,42 +24,21 @@ function App() {
   const [openSettings, setOpenSettings] = useState(false)
 
   useEffect(() => {
-    // 防爬虫检查
-    const crawlCheck = antiCrawlCheck()
-    if (!crawlCheck.allowed) {
-      console.warn('Anti-crawl check failed:', crawlCheck.reason)
-      // 可以选择阻止加载或显示警告
-    }
-
-    // 初始化数据（使用错误处理）
-    withAsyncErrorHandling(async () => {
-      // 验证和清理数据
-      const validatedPrompts = validatePrompts(promptsData)
-      const validatedBanana = validatePrompts(bananaData)
-      const validatedGpt4o = validatePrompts(gpt4oData)
-
-      // 合并数据，按 id 去重
-      const merged = [...validatedPrompts, ...validatedBanana, ...validatedGpt4o]
-      const uniqueData = Array.from(
-        new Map(merged.map(item => [item.id, item])).values()
-      )
-
-      // 按日期倒序排序（最新的在前）
-      const data = uniqueData.sort((a, b) => {
-        try {
-          const dateA = new Date(a.createdAt || a.updatedAt || '1970-01-01')
-          const dateB = new Date(b.createdAt || b.updatedAt || '1970-01-01')
-          return dateB.getTime() - dateA.getTime()
-        } catch (error) {
-          errorHandler.logError(error instanceof Error ? error : new Error(String(error)))
-          return 0
-        }
-      })
-
+    // 初始化数据
+    // 合并主数据与 banana 扩展数据，按 id 去重
+    const merged = [...(promptsData as Prompt[]), ...(bananaData as Prompt[]), ...(gpt4oData as Prompt[])]
+    const uniqueData = Array.from(new Map(merged.map(item => [item.id, item])).values())
+    
+    // 按日期倒序排序（最新的在前）
+    const data = uniqueData.sort((a, b) => {
+      const dateA = new Date(a.createdAt || a.updatedAt || '1970-01-01')
+      const dateB = new Date(b.createdAt || b.updatedAt || '1970-01-01')
+      return dateB.getTime() - dateA.getTime()
+    })
+    
     setPrompts(data)
     setFilteredPrompts(data)
     setLoading(false)
-    }, 'Failed to load prompts data')
   }, [])
 
   useEffect(() => {
@@ -92,41 +68,14 @@ function App() {
   }
 
   const handleSearch = (query: string) => {
-    // 防爬虫检查
-    const crawlCheck = antiCrawlCheck()
-    if (!crawlCheck.allowed) {
-      console.warn('Search blocked:', crawlCheck.reason)
-      return
-    }
-
-    // 验证搜索查询
-    const validation = validateSearchQuery(query)
-    
-    if (validation.valid) {
-      setSearchQuery(validation.cleaned)
-    } else {
-      errorHandler.logError(new Error(validation.error || 'Invalid search query'))
-    }
+    setSearchQuery(query)
   }
 
-  // 验证分页参数
-  const pagination = validatePagination(page, pageSize)
-  const validPage = pagination.valid ? pagination.page : 1
-  const validPageSize = pagination.valid ? pagination.pageSize : 100
-
   const total = filteredPrompts.length
-  const totalPages = Math.max(1, Math.ceil(total / validPageSize))
-  const safePage = Math.min(Math.max(1, validPage), totalPages)
-  const start = (safePage - 1) * validPageSize
-  const end = Math.min(start + validPageSize, total)
+  const totalPages = Math.max(1, Math.ceil(total / pageSize))
+  const start = (page - 1) * pageSize
+  const end = start + pageSize
   const pagedPrompts = filteredPrompts.slice(start, end)
-
-  // 如果页码无效，自动修正
-  useEffect(() => {
-    if (safePage !== page && totalPages > 0) {
-      setPage(safePage)
-    }
-  }, [page, safePage, totalPages])
 
   // 生成分页页码列表：总共展示最多 6 个可点击页码，当前页居中滑动窗口，首尾保留，缺口显示省略号
   const pageNumbers = (() => {

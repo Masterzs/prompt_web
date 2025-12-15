@@ -1,6 +1,4 @@
 import { Prompt } from '../types'
-import { sanitizeString } from './validator'
-import { safeExecute } from './error-handler'
 
 /**
  * 搜索提示词
@@ -9,57 +7,22 @@ import { safeExecute } from './error-handler'
  * @returns 匹配的提示词列表
  */
 export function searchPrompts(prompts: Prompt[], query: string): Prompt[] {
-  // 输入验证
-  if (!Array.isArray(prompts) || prompts.length === 0) {
-    return []
-  }
+  const searchTerm = query.toLowerCase().trim()
+  if (!searchTerm) return prompts
 
-  if (typeof query !== 'string') {
-    return prompts
-  }
+  return prompts.filter(prompt => {
+    const searchableText = [
+      prompt.title,
+      prompt.content,
+      prompt.description || '',
+      prompt.author || '',
+      prompt.platform,
+      prompt.category,
+      ...prompt.tags
+    ].join(' ').toLowerCase()
 
-  // 清理搜索关键词
-  const cleanedQuery = sanitizeString(query)
-  const searchTerm = cleanedQuery.toLowerCase().trim()
-  
-  if (!searchTerm) {
-    return prompts
-  }
-
-  // 限制搜索关键词长度
-  if (searchTerm.length > 200) {
-    return []
-  }
-
-  // 安全执行搜索
-  return safeExecute(() => {
-    return prompts.filter(prompt => {
-      try {
-        // 验证 prompt 数据
-        if (!prompt || typeof prompt !== 'object') {
-          return false
-        }
-
-        const searchableText = [
-          prompt.title || '',
-          prompt.content || '',
-          prompt.description || '',
-          prompt.author || '',
-          prompt.platform || '',
-          prompt.category || '',
-          ...(Array.isArray(prompt.tags) ? prompt.tags : [])
-        ]
-          .filter(Boolean)
-          .join(' ')
-          .toLowerCase()
-
-        return searchableText.includes(searchTerm)
-      } catch (error) {
-        // 单个 prompt 处理失败不影响整体搜索
-        return false
-      }
-    })
-  }, [])
+    return searchableText.includes(searchTerm)
+  })
 }
 
 /**

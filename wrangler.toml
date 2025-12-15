@@ -1,0 +1,40 @@
+name = "prompt-hub"
+main = "_worker.js"
+compatibility_date = "2024-01-15"
+
+[env.production]
+name = "prompt-hub-prod"
+
+[env.staging]
+name = "prompt-hub-staging"
+
+# KV命名空间配置
+[[kv_namespaces]]
+binding = "PROMPT_HUB_KV"
+id = "your-kv-namespace-id"
+preview_id = "your-preview-kv-namespace-id"
+
+# 环境变量
+[vars]
+ENVIRONMENT = "production"
+SITE_URL = "https://prompthub.example.com"
+
+# 构建配置
+[build]
+command = "npm run build"
+
+# 静态资源配置
+[site]
+bucket = "./dist"
+entry-point = "_worker.js"
+
+# 路由配置
+routes = [
+  { pattern = "prompthub.example.com/*", zone_name = "example.com" }
+]
+
+# Durable Objects配置（可选）
+[[durable_objects.bindings]]
+name = "RATE_LIMITER"
+class_name = "RateLimiter"
+script_name = "prompt-hub"
