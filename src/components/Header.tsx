@@ -88,6 +88,10 @@ export default function Header({ onOpenSettings }: HeaderProps) {
       {isImageModalOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+          style={{
+            WebkitBackdropFilter: 'blur(4px)',
+            backdropFilter: 'blur(4px)'
+          }}
           onClick={toggleImageModal}
         >
           <div className="relative max-w-4xl max-h-[90vh] w-full mx-4">

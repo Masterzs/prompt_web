@@ -154,7 +154,9 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
           className="absolute inset-0 [backface-visibility:hidden]"
           style={{
             touchAction: 'pan-y pan-x',
-            WebkitOverflowScrolling: 'touch'
+            WebkitOverflowScrolling: 'touch',
+            WebkitBackfaceVisibility: 'hidden',
+            backfaceVisibility: 'hidden'
           }}
         >
           <video
@@ -167,7 +169,9 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
             poster={displayImages[0]}
             style={{
               touchAction: 'pan-y pan-x',
-              pointerEvents: 'auto'
+              pointerEvents: 'auto',
+              WebkitBackfaceVisibility: 'hidden',
+              backfaceVisibility: 'hidden'
             }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent"></div>
@@ -210,7 +214,9 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
         className="absolute inset-0 [backface-visibility:hidden]"
         style={{
           touchAction: 'pan-y pan-x',
-          WebkitOverflowScrolling: 'touch'
+          WebkitOverflowScrolling: 'touch',
+          WebkitBackfaceVisibility: 'hidden',
+          backfaceVisibility: 'hidden'
         }}
       >
         {coverImage && (
@@ -229,7 +235,9 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
               userSelect: 'none',
               WebkitUserSelect: 'none',
               pointerEvents: 'auto',
-              WebkitTouchCallout: 'none'
+              WebkitTouchCallout: 'none',
+              WebkitBackfaceVisibility: 'hidden',
+              backfaceVisibility: 'hidden'
             }}
           />
         )}
@@ -329,7 +337,7 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
                     e.preventDefault()
                     handleExpand()
                   }}
-                  className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium relative ${
+                  className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium ${
                     expanded 
                       ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300 border border-gray-300' 
                       : 'bg-blue-50 text-blue-700 hover:bg-blue-100 active:bg-blue-200 border border-blue-200'
@@ -342,55 +350,24 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
                     userSelect: 'none',
                     WebkitUserSelect: 'none',
                     cursor: 'pointer',
-                    display: 'block',
+                    display: 'flex',
                     width: '100%',
                     margin: 0,
                     border: '1px solid',
-                    position: 'relative',
-                    // 确保整个按钮区域都可以点击
-                    WebkitTouchCallout: 'none',
-                    // 添加伪元素覆盖整个区域
-                    isolation: 'isolate'
+                    WebkitTouchCallout: 'none'
                   }}
                 >
-                  {/* 添加一个绝对定位的透明层，确保整个按钮区域都可以点击 */}
-                  <span
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      zIndex: 1,
-                      pointerEvents: 'auto',
-                      touchAction: 'none'
-                    }}
-                    aria-hidden="true"
-                  />
-                  <span
-                    style={{
-                      position: 'relative',
-                      zIndex: 2,
-                      pointerEvents: 'none',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '0.5rem',
-                      width: '100%'
-                    }}
-                  >
-                    {expanded ? (
-                      <>
-                        <ChevronUp className="w-5 h-5" />
-                        <span>收起内容</span>
-                      </>
-                    ) : (
-                      <>
-                        <ChevronDown className="w-5 h-5" />
-                        <span>展开查看更多</span>
-                      </>
-                    )}
-                  </span>
+                  {expanded ? (
+                    <>
+                      <ChevronUp className="w-5 h-5" />
+                      <span>收起内容</span>
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="w-5 h-5" />
+                      <span>展开查看更多</span>
+                    </>
+                  )}
                 </button>
               </div>
             )}
@@ -430,13 +407,20 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
         className="relative h-56 sm:h-60 md:h-56 lg:h-60" 
         style={{ 
           perspective: 1000,
+          WebkitPerspective: 1000,
           touchAction: 'pan-y pan-x'
         }}
       >
         <div 
           className={`h-full transition-transform duration-500 [transform-style:preserve-3d] ${flipped ? 'rotate-y-180' : ''}`}
           style={{
-            touchAction: 'pan-y pan-x'
+            touchAction: 'pan-y pan-x',
+            WebkitTransformStyle: 'preserve-3d',
+            transformStyle: 'preserve-3d',
+            WebkitTransform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+            transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+            WebkitTransition: 'transform 0.5s ease',
+            transition: 'transform 0.5s ease'
           }}
         >
           {renderMedia()}
@@ -447,59 +431,34 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
               zIndex: 2, 
               pointerEvents: 'auto',
               WebkitOverflowScrolling: 'touch',
-              touchAction: 'pan-y pinch-zoom'
+              touchAction: 'pan-y pinch-zoom',
+              WebkitBackfaceVisibility: 'hidden',
+              backfaceVisibility: 'hidden',
+              WebkitTransform: 'rotateY(180deg)',
+              transform: 'rotateY(180deg)'
             }}
             onTouchStart={(e) => {
-              // 如果触摸目标是按钮或其父元素，完全阻止事件传播
+              // 如果触摸目标是按钮或其父元素，阻止事件传播到父容器
               const target = e.target as HTMLElement
               const buttonContainer = target.closest('[style*="z-index: 100"]')
               const button = target.closest('button')
-              // 如果是文本内容区域（pre、p、h3、span等），允许文本选择，不阻止事件
-              const isTextContent = target.closest('pre') || target.closest('p') || target.closest('h3') || target.closest('.text-gray-800')
-              if (isTextContent) {
-                // 允许文本选择，不阻止事件
+              if (button || buttonContainer) {
+                // 让按钮自己处理，不阻止事件
+                e.stopPropagation()
                 return
               }
-              if (button || buttonContainer) {
-                e.stopPropagation()
-                e.preventDefault()
-                // 让按钮自己处理
-                return false
-              }
+              // 文本内容区域允许正常处理，不阻止
             }}
             onTouchMove={(e) => {
-              // 如果触摸目标是按钮区域，完全阻止滚动
+              // 如果触摸目标是按钮区域，阻止滚动
               const target = e.target as HTMLElement
               const buttonContainer = target.closest('[style*="z-index: 100"]')
               const button = target.closest('button')
-              // 如果是文本内容区域，允许滚动和文本选择
-              const isTextContent = target.closest('pre') || target.closest('p') || target.closest('h3') || target.closest('.text-gray-800')
-              if (isTextContent) {
-                // 允许文本选择，不阻止事件
-                return
-              }
-              if (button || buttonContainer) {
-                e.preventDefault()
-                e.stopPropagation()
-                return false
-              }
-            }}
-            onTouchEnd={(e) => {
-              // 如果触摸目标是按钮区域，阻止事件传播
-              const target = e.target as HTMLElement
-              const buttonContainer = target.closest('[style*="z-index: 100"]')
-              const button = target.closest('button')
-              // 如果是文本内容区域，允许文本选择
-              const isTextContent = target.closest('pre') || target.closest('p') || target.closest('h3') || target.closest('.text-gray-800')
-              if (isTextContent) {
-                // 允许文本选择，不阻止事件
-                return
-              }
               if (button || buttonContainer) {
                 e.stopPropagation()
-                e.preventDefault()
-                return false
+                return
               }
+              // 文本内容区域允许滚动和文本选择
             }}
           >
             <div className="flex items-start justify-between mb-3">
@@ -564,7 +523,7 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
                       e.preventDefault()
                       handleExpand()
                     }}
-                    className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium relative ${
+                    className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium ${
                       expanded 
                         ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300 border border-gray-300' 
                         : 'bg-blue-50 text-blue-700 hover:bg-blue-100 active:bg-blue-200 border border-blue-200'
@@ -577,55 +536,24 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
                       userSelect: 'none',
                       WebkitUserSelect: 'none',
                       cursor: 'pointer',
-                      display: 'block',
+                      display: 'flex',
                       width: '100%',
                       margin: 0,
                       border: '1px solid',
-                      position: 'relative',
-                      // 确保整个按钮区域都可以点击
-                      WebkitTouchCallout: 'none',
-                      // 添加伪元素覆盖整个区域
-                      isolation: 'isolate'
+                      WebkitTouchCallout: 'none'
                     }}
                   >
-                    {/* 添加一个绝对定位的透明层，确保整个按钮区域都可以点击 */}
-                    <span
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        zIndex: 1,
-                        pointerEvents: 'auto',
-                        touchAction: 'none'
-                      }}
-                      aria-hidden="true"
-                    />
-                    <span
-                      style={{
-                        position: 'relative',
-                        zIndex: 2,
-                        pointerEvents: 'none',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '0.5rem',
-                        width: '100%'
-                      }}
-                    >
-                      {expanded ? (
-                        <>
-                          <ChevronUp className="w-5 h-5" />
-                          <span>收起内容</span>
-                        </>
-                      ) : (
-                        <>
-                          <ChevronDown className="w-5 h-5" />
-                          <span>展开查看更多</span>
-                        </>
-                      )}
-                    </span>
+                    {expanded ? (
+                      <>
+                        <ChevronUp className="w-5 h-5" />
+                        <span>收起内容</span>
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="w-5 h-5" />
+                        <span>展开查看更多</span>
+                      </>
+                    )}
                   </button>
                 </div>
               )}

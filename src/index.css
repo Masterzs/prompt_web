@@ -60,46 +60,72 @@
   user-select: none;
 }
 
-/* 复制成功动画 */
+/* 复制成功动画 - Safari兼容 */
 @keyframes copySuccess {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
+  0% { 
+    -webkit-transform: scale(1);
+    transform: scale(1); 
+  }
+  50% { 
+    -webkit-transform: scale(1.1);
+    transform: scale(1.1); 
+  }
+  100% { 
+    -webkit-transform: scale(1);
+    transform: scale(1); 
+  }
 }
 
 .copy-success {
   animation: copySuccess 0.3s ease-in-out;
 }
 
-/* 翻转卡片样式 */
+/* 翻转卡片样式 - Safari兼容 */
 .rotate-y-180 {
+  -webkit-transform: rotateY(180deg);
   transform: rotateY(180deg);
 }
 
 [transform-style\:preserve-3d] {
+  -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
 
-/* 解决部分浏览器背面渲染问题 */
+/* 解决部分浏览器背面渲染问题 - Safari兼容 */
 [backface-visibility\:hidden] {
+  -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
 
-/* 移动端触摸优化 */
+/* 移动端触摸优化 - iOS Safari兼容 */
 .touch-manipulation {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }
 
-/* 确保按钮在移动端有足够的点击区域 */
+/* 确保按钮在移动端有足够的点击区域 - iOS Safari兼容 */
 button {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  -webkit-touch-callout: none;
 }
 
-/* 微信浏览器特殊优化 */
+/* iOS Safari特殊优化 */
 @supports (-webkit-touch-callout: none) {
   button, a {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
   }
+}
+
+/* iOS Safari滚动优化 */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* iOS Safari文本选择优化 */
+body {
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
