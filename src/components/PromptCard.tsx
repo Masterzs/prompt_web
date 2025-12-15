@@ -55,14 +55,22 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
     }
     
     // 相对路径，验证路径安全性（允许路径分隔符 /，但不允许反斜杠 \）
-    // 允许：gpt4o/filename.jpg, banana/file.png
+    // 允许：gpt4o/filename.jpg, banana/file.png, assets/image/...
     // 禁止：..\file.jpg, C:\file.jpg
     if (!/^[^<>"|?*\x00-\x1f\\]+$/.test(cleanedFile)) {
       return ''
     }
     
-    // 相对路径，根据mediaType添加基础路径，并加上 base 路径
+    // 检查路径是否已经包含 assets/image/ 或 assets/video/ 前缀
+    // 如果已经包含，直接加上 basePath 即可（去掉开头的斜杠后）
     const normalized = cleanedFile.replace(/^\/+/, '')
+    if (normalized.startsWith('assets/image/') || normalized.startsWith('assets/video/')) {
+      // 路径已经包含 assets/ 前缀，直接拼接 basePath
+      return joinPath(basePath, normalized)
+    }
+    
+    // 相对路径，根据mediaType添加基础路径，并加上 base 路径
+    // 例如：gpt4o/filename.jpg -> /prompt_web/assets/image/gpt4o/filename.jpg
     return joinPath(basePath, `${mediaRoot}${normalized}`)
   }
 
