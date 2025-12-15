@@ -37,18 +37,31 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
   // 解析媒体文件路径
   // location 支持多种格式：
   // 1. 完整URL: http://... 或 https://...
-  // 2. 绝对路径: /assets/image/...
+  // 2. 绝对路径: /assets/image/... (会自动加上BASE_URL)
   // 3. 相对路径（含子目录）: gpt4o/filename.jpg -> /assets/image/gpt4o/filename.jpg
   // 4. 文件名: filename.jpg -> /assets/image/filename.jpg
   const resolveMediaPath = (file: string, mediaType: 'image' | 'video'): string => {
     if (!file) return ''
-    // 完整URL或绝对路径，直接返回
-    if (file.startsWith('http://') || file.startsWith('https://') || file.startsWith('/')) {
+    
+    // 完整URL，直接返回
+    if (file.startsWith('http://') || file.startsWith('https://')) {
       return file
     }
+    
+    // 获取Vite的base路径（GitHub Pages会自动包含仓库名）
+    const baseUrl = import.meta.env.BASE_URL || '/'
+    // 确保baseUrl以/结尾
+    const normalizedBase = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/'
+    
+    // 绝对路径（以/开头），需要加上BASE_URL
+    if (file.startsWith('/')) {
+      // 去掉开头的/，然后拼接
+      return normalizedBase + file.slice(1)
+    }
+    
     // 相对路径，根据mediaType添加基础路径
-    const basePath = mediaType === 'video' ? '/assets/video/' : '/assets/image/'
-    return basePath + file
+    const assetsPath = mediaType === 'video' ? 'assets/video/' : 'assets/image/'
+    return normalizedBase + assetsPath + file
   }
 
   const mediaFiles = prompt.location ?? []
@@ -58,7 +71,9 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
   const resolvedImages = imageFiles.map(file => resolveMediaPath(file, 'image'))
   const resolvedVideos = videoFiles.map(file => resolveMediaPath(file, 'video'))
 
-  const fallbackImage = prompt.imageUrl || categoryImageMap[prompt.category] || categoryImageMap.other
+  // 处理 imageUrl 字段（JSON数据中的硬编码路径也需要加上BASE_URL）
+  const resolvedImageUrl = prompt.imageUrl ? resolveMediaPath(prompt.imageUrl, 'image') : null
+  const fallbackImage = resolvedImageUrl || categoryImageMap[prompt.category] || categoryImageMap.other
   const displayImages = resolvedImages.length > 0 && resolvedImages[0]
     ? resolvedImages
     : Array.from(new Set([fallbackImage].filter(Boolean)))
