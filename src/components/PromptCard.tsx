@@ -133,26 +133,22 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
     window.open(prompt.sourceUrl, '_blank', 'noopener,noreferrer')
   }
 
-  // 移动端专用的触摸开始处理函数（使用事件捕获）
-  const handleTouchStartExpand = (e: React.TouchEvent) => {
-    e.stopPropagation()
-    e.preventDefault() // 阻止默认行为，防止触发滚动
-    // 直接更新状态
+  // 统一的展开/收起处理函数
+  const handleExpand = () => {
     setExpanded(prev => !prev)
   }
   
-  // 移动端触摸结束处理函数（备用）
+  // 移动端触摸结束处理函数（使用onTouchEnd减少延迟）
   const handleTouchEndExpand = (e: React.TouchEvent) => {
     e.stopPropagation()
-    e.preventDefault()
-    // 防止重复触发
+    // 不阻止默认行为，减少延迟
+    handleExpand()
   }
   
-  // 处理点击事件（兼容桌面和移动端）
+  // 处理点击事件（桌面端）
   const handleClickExpand = (e: React.MouseEvent) => {
     e.stopPropagation()
-    e.preventDefault()
-    setExpanded(prev => !prev)
+    handleExpand()
   }
 
   const toggleFlipped = (e?: React.MouseEvent | React.TouchEvent) => {
@@ -296,32 +292,34 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
             {prompt.content.length > 200 && (
               <button 
                 onClick={handleClickExpand}
-                onTouchStart={handleTouchStartExpand}
                 onTouchEnd={handleTouchEndExpand}
-                className={`mt-3 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
+                className={`mt-3 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium ${
                   expanded 
-                    ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300' 
-                    : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200'
+                    ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300 border border-gray-300' 
+                    : 'bg-blue-50 text-blue-700 hover:bg-blue-100 active:bg-blue-200 border border-blue-200'
                 }`}
                 style={{ 
-                  touchAction: 'none', 
+                  touchAction: 'manipulation', 
                   minHeight: '48px',
-                  WebkitTapHighlightColor: 'transparent',
+                  WebkitTapHighlightColor: 'rgba(0, 0, 0, 0.1)',
                   pointerEvents: 'auto',
                   userSelect: 'none',
                   WebkitUserSelect: 'none',
-                  zIndex: 100
+                  zIndex: 100,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  width: '100%'
                 }}
               >
                 {expanded ? (
                   <>
-                    <ChevronUp className="w-5 h-5" />
-                    <span>收起内容</span>
+                    <ChevronUp className="w-5 h-5 pointer-events-none" />
+                    <span className="pointer-events-none">收起内容</span>
                   </>
                 ) : (
                   <>
-                    <ChevronDown className="w-5 h-5" />
-                    <span>展开查看更多</span>
+                    <ChevronDown className="w-5 h-5 pointer-events-none" />
+                    <span className="pointer-events-none">展开查看更多</span>
                   </>
                 )}
               </button>
@@ -401,32 +399,34 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
               {prompt.content.length > 200 && (
                 <button 
                   onClick={handleClickExpand}
-                  onTouchStart={handleTouchStartExpand}
                   onTouchEnd={handleTouchEndExpand}
-                  className={`mt-3 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
+                  className={`mt-3 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium ${
                     expanded 
-                      ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300' 
-                      : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200'
+                      ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300 border border-gray-300' 
+                      : 'bg-blue-50 text-blue-700 hover:bg-blue-100 active:bg-blue-200 border border-blue-200'
                   }`}
                   style={{ 
-                    touchAction: 'none', 
+                    touchAction: 'manipulation', 
                     minHeight: '48px',
-                    WebkitTapHighlightColor: 'transparent',
+                    WebkitTapHighlightColor: 'rgba(0, 0, 0, 0.1)',
                     pointerEvents: 'auto',
                     userSelect: 'none',
                     WebkitUserSelect: 'none',
-                    zIndex: 100
+                    zIndex: 100,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    width: '100%'
                   }}
                 >
                   {expanded ? (
                     <>
-                      <ChevronUp className="w-5 h-5" />
-                      <span>收起内容</span>
+                      <ChevronUp className="w-5 h-5 pointer-events-none" />
+                      <span className="pointer-events-none">收起内容</span>
                     </>
                   ) : (
                     <>
-                      <ChevronDown className="w-5 h-5" />
-                      <span>展开查看更多</span>
+                      <ChevronDown className="w-5 h-5 pointer-events-none" />
+                      <span className="pointer-events-none">展开查看更多</span>
                     </>
                   )}
                 </button>
