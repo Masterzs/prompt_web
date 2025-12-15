@@ -273,8 +273,27 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
           </div>
           <p className="text-gray-600 text-sm mb-4 line-clamp-3">{prompt.description}</p>
           <div className="mb-4">
-            <div className={`bg-gray-50 rounded-lg p-4 ${!expanded ? 'max-h-40 overflow-hidden' : ''}`}>
-              <pre className="text-sm text-gray-800 whitespace-pre-wrap font-mono leading-relaxed">{prompt.content}</pre>
+            <div 
+              className={`bg-gray-50 rounded-lg p-4 ${!expanded ? 'max-h-40 overflow-hidden' : ''}`}
+              style={{
+                userSelect: 'text',
+                WebkitUserSelect: 'text',
+                MozUserSelect: 'text',
+                msUserSelect: 'text'
+              }}
+            >
+              <pre 
+                className="text-sm text-gray-800 whitespace-pre-wrap font-mono leading-relaxed"
+                style={{
+                  userSelect: 'text',
+                  WebkitUserSelect: 'text',
+                  MozUserSelect: 'text',
+                  msUserSelect: 'text',
+                  WebkitTouchCallout: 'default'
+                }}
+              >
+                {prompt.content}
+              </pre>
             </div>
             {prompt.content.length > 200 && (
               <div
@@ -435,6 +454,12 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
               const target = e.target as HTMLElement
               const buttonContainer = target.closest('[style*="z-index: 100"]')
               const button = target.closest('button')
+              // 如果是文本内容区域（pre、p、h3、span等），允许文本选择，不阻止事件
+              const isTextContent = target.closest('pre') || target.closest('p') || target.closest('h3') || target.closest('.text-gray-800')
+              if (isTextContent) {
+                // 允许文本选择，不阻止事件
+                return
+              }
               if (button || buttonContainer) {
                 e.stopPropagation()
                 e.preventDefault()
@@ -447,6 +472,12 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
               const target = e.target as HTMLElement
               const buttonContainer = target.closest('[style*="z-index: 100"]')
               const button = target.closest('button')
+              // 如果是文本内容区域，允许滚动和文本选择
+              const isTextContent = target.closest('pre') || target.closest('p') || target.closest('h3') || target.closest('.text-gray-800')
+              if (isTextContent) {
+                // 允许文本选择，不阻止事件
+                return
+              }
               if (button || buttonContainer) {
                 e.preventDefault()
                 e.stopPropagation()
@@ -458,6 +489,12 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
               const target = e.target as HTMLElement
               const buttonContainer = target.closest('[style*="z-index: 100"]')
               const button = target.closest('button')
+              // 如果是文本内容区域，允许文本选择
+              const isTextContent = target.closest('pre') || target.closest('p') || target.closest('h3') || target.closest('.text-gray-800')
+              if (isTextContent) {
+                // 允许文本选择，不阻止事件
+                return
+              }
               if (button || buttonContainer) {
                 e.stopPropagation()
                 e.preventDefault()
@@ -471,8 +508,27 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
             </div>
             <p className="text-gray-600 text-sm mb-4 line-clamp-3">{prompt.description}</p>
             <div className="mb-4">
-              <div className={`bg-gray-50 rounded-lg p-4 ${!expanded ? 'max-h-32 overflow-hidden' : ''}`}>
-                <pre className="text-sm text-gray-800 whitespace-pre-wrap font-mono leading-relaxed">{prompt.content}</pre>
+              <div 
+                className={`bg-gray-50 rounded-lg p-4 ${!expanded ? 'max-h-32 overflow-hidden' : ''}`}
+                style={{
+                  userSelect: 'text',
+                  WebkitUserSelect: 'text',
+                  MozUserSelect: 'text',
+                  msUserSelect: 'text'
+                }}
+              >
+                <pre 
+                  className="text-sm text-gray-800 whitespace-pre-wrap font-mono leading-relaxed"
+                  style={{
+                    userSelect: 'text',
+                    WebkitUserSelect: 'text',
+                    MozUserSelect: 'text',
+                    msUserSelect: 'text',
+                    WebkitTouchCallout: 'default'
+                  }}
+                >
+                  {prompt.content}
+                </pre>
               </div>
               {prompt.content.length > 200 && (
                 <div
