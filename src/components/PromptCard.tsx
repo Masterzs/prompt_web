@@ -137,12 +137,6 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
   const handleExpand = () => {
     setExpanded(prev => !prev)
   }
-  
-  // 处理点击事件（桌面端和移动端）
-  const handleClickExpand = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    handleExpand()
-  }
 
   const toggleFlipped = (e?: React.MouseEvent | React.TouchEvent) => {
     if (e) {
