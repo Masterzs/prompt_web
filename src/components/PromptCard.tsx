@@ -294,37 +294,37 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
               <pre className="text-sm text-gray-800 whitespace-pre-wrap font-mono leading-relaxed">{prompt.content}</pre>
             </div>
             {prompt.content.length > 200 && (
-              <div 
-                className="mt-2"
-                style={{
-                  touchAction: 'none',
-                  position: 'relative',
-                  zIndex: 100,
-                  pointerEvents: 'auto'
+              <button 
+                onClick={handleClickExpand}
+                onTouchStart={handleTouchStartExpand}
+                onTouchEnd={handleTouchEndExpand}
+                className={`mt-3 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
+                  expanded 
+                    ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300' 
+                    : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200'
+                }`}
+                style={{ 
+                  touchAction: 'none', 
+                  minHeight: '48px',
+                  WebkitTapHighlightColor: 'transparent',
+                  pointerEvents: 'auto',
+                  userSelect: 'none',
+                  WebkitUserSelect: 'none',
+                  zIndex: 100
                 }}
               >
-                <button 
-                  onClick={handleClickExpand}
-                  onTouchStart={handleTouchStartExpand}
-                  onTouchEnd={handleTouchEndExpand}
-                  className="text-blue-600 hover:text-blue-800 active:text-blue-900 text-sm font-medium flex items-center gap-1 transition-colors cursor-pointer"
-                  style={{ 
-                    touchAction: 'none', 
-                    minHeight: '44px', 
-                    minWidth: '120px',
-                    padding: '8px 12px', 
-                    WebkitTapHighlightColor: 'transparent',
-                    pointerEvents: 'auto',
-                    position: 'relative',
-                    userSelect: 'none',
-                    WebkitUserSelect: 'none',
-                    width: '100%',
-                    textAlign: 'left'
-                  }}
-                >
-                  {expanded ? (<><ChevronUp className="w-4 h-4" />收起</>) : (<><ChevronDown className="w-4 h-4" />展开查看更多</>)}
-                </button>
-              </div>
+                {expanded ? (
+                  <>
+                    <ChevronUp className="w-5 h-5" />
+                    <span>收起内容</span>
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="w-5 h-5" />
+                    <span>展开查看更多</span>
+                  </>
+                )}
+              </button>
             )}
           </div>
           <div className="flex flex-wrap gap-2 mb-4">
@@ -399,40 +399,37 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
                 <pre className="text-sm text-gray-800 whitespace-pre-wrap font-mono leading-relaxed">{prompt.content}</pre>
               </div>
               {prompt.content.length > 200 && (
-                <div 
-                  className="mt-2"
-                  style={{
-                    touchAction: 'none',
-                    position: 'relative',
-                    zIndex: 100,
-                    pointerEvents: 'auto'
-                  }}
-                  onTouchStart={(e) => {
-                    e.stopPropagation()
+                <button 
+                  onClick={handleClickExpand}
+                  onTouchStart={handleTouchStartExpand}
+                  onTouchEnd={handleTouchEndExpand}
+                  className={`mt-3 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
+                    expanded 
+                      ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300' 
+                      : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200'
+                  }`}
+                  style={{ 
+                    touchAction: 'none', 
+                    minHeight: '48px',
+                    WebkitTapHighlightColor: 'transparent',
+                    pointerEvents: 'auto',
+                    userSelect: 'none',
+                    WebkitUserSelect: 'none',
+                    zIndex: 100
                   }}
                 >
-                  <button 
-                    onClick={handleClickExpand}
-                    onTouchStart={handleTouchStartExpand}
-                    onTouchEnd={handleTouchEndExpand}
-                    className="text-blue-600 hover:text-blue-800 active:text-blue-900 text-sm font-medium flex items-center gap-1 transition-colors cursor-pointer"
-                    style={{ 
-                      touchAction: 'none', 
-                      minHeight: '44px', 
-                      minWidth: '120px',
-                      padding: '8px 12px', 
-                      WebkitTapHighlightColor: 'transparent',
-                      pointerEvents: 'auto',
-                      position: 'relative',
-                      userSelect: 'none',
-                      WebkitUserSelect: 'none',
-                      width: '100%',
-                      textAlign: 'left'
-                    }}
-                  >
-                    {expanded ? (<><ChevronUp className="w-4 h-4" />收起</>) : (<><ChevronDown className="w-4 h-4" />展开查看更多</>)}
-                  </button>
-                </div>
+                  {expanded ? (
+                    <>
+                      <ChevronUp className="w-5 h-5" />
+                      <span>收起内容</span>
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="w-5 h-5" />
+                      <span>展开查看更多</span>
+                    </>
+                  )}
+                </button>
               )}
             </div>
             <div className="flex flex-wrap gap-2 mb-4">
