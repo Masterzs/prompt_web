@@ -286,29 +286,43 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
               <div
                 className="mt-3"
                 style={{
-                  touchAction: 'manipulation',
+                  touchAction: 'none',
                   position: 'relative',
                   zIndex: 100,
                   pointerEvents: 'auto'
                 }}
+                onTouchStart={(e) => {
+                  e.stopPropagation()
+                  e.preventDefault()
+                }}
+                onTouchEnd={(e) => {
+                  e.stopPropagation()
+                  e.preventDefault()
+                  handleExpand()
+                }}
               >
                 <button 
-                  onClick={handleClickExpand}
-                  onTouchStart={(e) => {
+                  onClick={(e) => {
                     e.stopPropagation()
                     e.preventDefault()
                     handleExpand()
                   }}
+                  onTouchStart={(e) => {
+                    e.stopPropagation()
+                    e.preventDefault()
+                  }}
                   onTouchEnd={(e) => {
                     e.stopPropagation()
+                    e.preventDefault()
+                    handleExpand()
                   }}
-                  className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium ${
+                  className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium relative ${
                     expanded 
                       ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300 border border-gray-300' 
                       : 'bg-blue-50 text-blue-700 hover:bg-blue-100 active:bg-blue-200 border border-blue-200'
                   }`}
                   style={{ 
-                    touchAction: 'manipulation', 
+                    touchAction: 'none', 
                     minHeight: '48px',
                     WebkitTapHighlightColor: 'rgba(0, 0, 0, 0.1)',
                     pointerEvents: 'auto',
@@ -319,20 +333,51 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
                     width: '100%',
                     margin: 0,
                     border: '1px solid',
-                    position: 'relative'
+                    position: 'relative',
+                    // 确保整个按钮区域都可以点击
+                    WebkitTouchCallout: 'none',
+                    // 添加伪元素覆盖整个区域
+                    isolation: 'isolate'
                   }}
                 >
-                  {expanded ? (
-                    <>
-                      <ChevronUp className="w-5 h-5 pointer-events-none inline-block" />
-                      <span className="pointer-events-none">收起内容</span>
-                    </>
-                  ) : (
-                    <>
-                      <ChevronDown className="w-5 h-5 pointer-events-none inline-block" />
-                      <span className="pointer-events-none">展开查看更多</span>
-                    </>
-                  )}
+                  {/* 添加一个绝对定位的透明层，确保整个按钮区域都可以点击 */}
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      zIndex: 1,
+                      pointerEvents: 'auto',
+                      touchAction: 'none'
+                    }}
+                    aria-hidden="true"
+                  />
+                  <span
+                    style={{
+                      position: 'relative',
+                      zIndex: 2,
+                      pointerEvents: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem',
+                      width: '100%'
+                    }}
+                  >
+                    {expanded ? (
+                      <>
+                        <ChevronUp className="w-5 h-5" />
+                        <span>收起内容</span>
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="w-5 h-5" />
+                        <span>展开查看更多</span>
+                      </>
+                    )}
+                  </span>
                 </button>
               </div>
             )}
@@ -392,21 +437,37 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
               touchAction: 'pan-y pinch-zoom'
             }}
             onTouchStart={(e) => {
-              // 如果触摸目标是按钮或其父元素，不阻止事件
+              // 如果触摸目标是按钮或其父元素，完全阻止事件传播
               const target = e.target as HTMLElement
+              const buttonContainer = target.closest('[style*="z-index: 100"]')
               const button = target.closest('button')
-              if (button) {
+              if (button || buttonContainer) {
                 e.stopPropagation()
-                // 让按钮自己处理，不阻止
-                return
+                e.preventDefault()
+                // 让按钮自己处理
+                return false
               }
             }}
             onTouchMove={(e) => {
-              // 如果触摸目标是按钮，阻止滚动
+              // 如果触摸目标是按钮区域，完全阻止滚动
               const target = e.target as HTMLElement
-              if (target.closest('button')) {
+              const buttonContainer = target.closest('[style*="z-index: 100"]')
+              const button = target.closest('button')
+              if (button || buttonContainer) {
                 e.preventDefault()
                 e.stopPropagation()
+                return false
+              }
+            }}
+            onTouchEnd={(e) => {
+              // 如果触摸目标是按钮区域，阻止事件传播
+              const target = e.target as HTMLElement
+              const buttonContainer = target.closest('[style*="z-index: 100"]')
+              const button = target.closest('button')
+              if (button || buttonContainer) {
+                e.stopPropagation()
+                e.preventDefault()
+                return false
               }
             }}
           >
@@ -423,29 +484,43 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
                 <div
                   className="mt-3"
                   style={{
-                    touchAction: 'manipulation',
+                    touchAction: 'none',
                     position: 'relative',
                     zIndex: 100,
                     pointerEvents: 'auto'
                   }}
+                  onTouchStart={(e) => {
+                    e.stopPropagation()
+                    e.preventDefault()
+                  }}
+                  onTouchEnd={(e) => {
+                    e.stopPropagation()
+                    e.preventDefault()
+                    handleExpand()
+                  }}
                 >
                   <button 
-                    onClick={handleClickExpand}
-                    onTouchStart={(e) => {
+                    onClick={(e) => {
                       e.stopPropagation()
                       e.preventDefault()
                       handleExpand()
                     }}
+                    onTouchStart={(e) => {
+                      e.stopPropagation()
+                      e.preventDefault()
+                    }}
                     onTouchEnd={(e) => {
                       e.stopPropagation()
+                      e.preventDefault()
+                      handleExpand()
                     }}
-                    className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium ${
+                    className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium relative ${
                       expanded 
                         ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300 border border-gray-300' 
                         : 'bg-blue-50 text-blue-700 hover:bg-blue-100 active:bg-blue-200 border border-blue-200'
                     }`}
                     style={{ 
-                      touchAction: 'manipulation', 
+                      touchAction: 'none', 
                       minHeight: '48px',
                       WebkitTapHighlightColor: 'rgba(0, 0, 0, 0.1)',
                       pointerEvents: 'auto',
@@ -456,20 +531,51 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
                       width: '100%',
                       margin: 0,
                       border: '1px solid',
-                      position: 'relative'
+                      position: 'relative',
+                      // 确保整个按钮区域都可以点击
+                      WebkitTouchCallout: 'none',
+                      // 添加伪元素覆盖整个区域
+                      isolation: 'isolate'
                     }}
                   >
-                    {expanded ? (
-                      <>
-                        <ChevronUp className="w-5 h-5 pointer-events-none inline-block" />
-                        <span className="pointer-events-none">收起内容</span>
-                      </>
-                    ) : (
-                      <>
-                        <ChevronDown className="w-5 h-5 pointer-events-none inline-block" />
-                        <span className="pointer-events-none">展开查看更多</span>
-                      </>
-                    )}
+                    {/* 添加一个绝对定位的透明层，确保整个按钮区域都可以点击 */}
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        zIndex: 1,
+                        pointerEvents: 'auto',
+                        touchAction: 'none'
+                      }}
+                      aria-hidden="true"
+                    />
+                    <span
+                      style={{
+                        position: 'relative',
+                        zIndex: 2,
+                        pointerEvents: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.5rem',
+                        width: '100%'
+                      }}
+                    >
+                      {expanded ? (
+                        <>
+                          <ChevronUp className="w-5 h-5" />
+                          <span>收起内容</span>
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown className="w-5 h-5" />
+                          <span>展开查看更多</span>
+                        </>
+                      )}
+                    </span>
                   </button>
                 </div>
               )}
