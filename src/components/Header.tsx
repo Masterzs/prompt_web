@@ -1,10 +1,37 @@
-import { Sparkles, Settings } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Sparkles, Settings, X } from 'lucide-react'
 
 interface HeaderProps {
   onOpenSettings?: () => void
 }
 
 export default function Header({ onOpenSettings }: HeaderProps) {
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false)
+
+  // ESC键关闭模态框
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isImageModalOpen) {
+        setIsImageModalOpen(false)
+      }
+    }
+    if (isImageModalOpen) {
+      document.addEventListener('keydown', handleEscape)
+      // 防止背景滚动
+      document.body.style.overflow = 'hidden'
+    }
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+      document.body.style.overflow = 'unset'
+    }
+  }, [isImageModalOpen])
+
+  const toggleImageModal = () => {
+    setIsImageModalOpen(!isImageModalOpen)
+  }
+
+  const imageUrl = `${import.meta.env.BASE_URL}微信图片_20251214200014_40_2.jpg`
+
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -22,18 +49,16 @@ export default function Header({ onOpenSettings }: HeaderProps) {
           <div className="flex items-center space-x-4">
             {/* AI交流学习群图片 */}
             <div className="flex flex-col items-center space-y-1">
-              <a
-                href="https://github.com/Masterzs/prompt_web"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center hover:opacity-80 transition-opacity"
+              <div 
+                className="flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={toggleImageModal}
               >
                 <img
-                  src={`${import.meta.env.BASE_URL}微信图片_20251214200014_40_2.jpg`}
+                  src={imageUrl}
                   alt="AI交流学习群"
                   className="h-12 w-12 object-cover rounded-lg"
                 />
-              </a>
+              </div>
               <span className="text-xs text-gray-600 font-medium">AI交流学习群</span>
             </div>
             
@@ -58,6 +83,33 @@ export default function Header({ onOpenSettings }: HeaderProps) {
           </div>
         </div>
       </div>
+
+      {/* 图片放大模态框 */}
+      {isImageModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+          onClick={toggleImageModal}
+        >
+          <div className="relative max-w-4xl max-h-[90vh] w-full mx-4">
+            {/* 关闭按钮 */}
+            <button
+              onClick={toggleImageModal}
+              className="absolute top-4 right-4 z-10 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors"
+              aria-label="关闭"
+            >
+              <X className="w-6 h-6 text-gray-800" />
+            </button>
+            
+            {/* 放大图片 - 点击图片或背景都可以关闭 */}
+            <img
+              src={imageUrl}
+              alt="AI交流学习群"
+              className="w-full h-auto max-h-[90vh] object-contain rounded-lg shadow-2xl cursor-pointer"
+              onClick={toggleImageModal}
+            />
+          </div>
+        </div>
+      )}
     </header>
   )
 }

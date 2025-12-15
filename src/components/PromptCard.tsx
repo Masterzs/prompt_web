@@ -14,6 +14,29 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
   const [flipped, setFlipped] = useState(false)
   const [currentImage, setCurrentImage] = useState(0)
 
+  // 平台名称映射（显示友好名称）
+  const platformNameMap: Record<string, string> = {
+    'twitter': 'Twitter/X',
+    'youtube': 'YouTube',
+    'github': 'GitHub',
+    'reddit': 'Reddit',
+    'discord': 'Discord',
+    'wechat': '微信',
+    'weibo': '微博',
+    'zhihu': '知乎',
+    'xiaohongshu': '小红书',
+    'gpt4o': 'GPT-4o',
+    'other': '其他'
+  }
+
+  // 获取来源显示文本：优先显示域名，否则显示平台友好名称
+  const getSourceDisplay = () => {
+    if (prompt.sourceUrl && prompt.sourceUrl !== '') {
+      return prompt.sourceUrl
+    }
+    return platformNameMap[prompt.platform] || prompt.platform || '未知'
+  }
+
   const categoryImageMap: Record<string, string> = {
     writing: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb?q=80&w=1200&auto=format&fit=crop',
     drawing: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=1200&auto=format&fit=crop',
@@ -116,6 +139,14 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
       e.stopPropagation()
     }
     setExpanded(!expanded)
+  }
+
+  // 移动端专用的触摸处理函数
+  const handleTouchExpand = (e: React.TouchEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    // 直接更新状态，不依赖事件对象
+    setExpanded(prev => !prev)
   }
 
   const toggleFlipped = (e?: React.MouseEvent | React.TouchEvent) => {
@@ -234,16 +265,16 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
             {prompt.content.length > 200 && (
               <button 
                 onClick={toggleExpanded}
-                onTouchEnd={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  toggleExpanded(e)
+                onTouchStart={handleTouchExpand}
+                className="mt-2 text-blue-600 hover:text-blue-800 active:text-blue-900 text-sm font-medium flex items-center gap-1 transition-colors touch-manipulation relative z-50 cursor-pointer"
+                style={{ 
+                  touchAction: 'manipulation', 
+                  minHeight: '44px', 
+                  padding: '8px 0', 
+                  WebkitTapHighlightColor: 'transparent',
+                  pointerEvents: 'auto',
+                  position: 'relative'
                 }}
-                onTouchStart={(e) => {
-                  e.stopPropagation()
-                }}
-                className="mt-2 text-blue-600 hover:text-blue-800 active:text-blue-900 text-sm font-medium flex items-center gap-1 transition-colors touch-manipulation relative z-10"
-                style={{ touchAction: 'manipulation', minHeight: '44px', padding: '8px 0', WebkitTapHighlightColor: 'transparent' }}
               >
                 {expanded ? (<><ChevronUp className="w-4 h-4" />收起</>) : (<><ChevronDown className="w-4 h-4" />展开查看更多</>)}
               </button>
@@ -257,7 +288,7 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
           <div className="flex items-center justify-between text-xs text-gray-500">
             <div className="flex items-center gap-4">
               <span>作者: {prompt.author}</span>
-              <span>来源: {prompt.platform || '未知'}</span>
+              <span>来源: {getSourceDisplay()}</span>
             </div>
             <span>{new Date(prompt.createdAt).toLocaleDateString()}</span>
           </div>
@@ -284,7 +315,7 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
         <div className={`h-full transition-transform duration-500 [transform-style:preserve-3d] ${flipped ? 'rotate-y-180' : ''}`}>
           {renderMedia()}
 
-          <div className="absolute inset-0 bg-white p-4 sm:p-6 overflow-y-auto [backface-visibility:hidden] rotate-y-180" style={{ zIndex: 1 }}>
+          <div className="absolute inset-0 bg-white p-4 sm:p-6 overflow-y-auto [backface-visibility:hidden] rotate-y-180" style={{ zIndex: 2, pointerEvents: 'auto' }}>
             <div className="flex items-start justify-between mb-3">
               <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 flex-1">{prompt.title}</h3>
               <span className="ml-3 px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full whitespace-nowrap">{prompt.category}</span>
@@ -297,16 +328,16 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
               {prompt.content.length > 200 && (
                 <button 
                   onClick={toggleExpanded}
-                  onTouchEnd={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    toggleExpanded(e)
+                  onTouchStart={handleTouchExpand}
+                  className="mt-2 text-blue-600 hover:text-blue-800 active:text-blue-900 text-sm font-medium flex items-center gap-1 transition-colors touch-manipulation relative z-50 cursor-pointer"
+                  style={{ 
+                    touchAction: 'manipulation', 
+                    minHeight: '44px', 
+                    padding: '8px 0', 
+                    WebkitTapHighlightColor: 'transparent',
+                    pointerEvents: 'auto',
+                    position: 'relative'
                   }}
-                  onTouchStart={(e) => {
-                    e.stopPropagation()
-                  }}
-                  className="mt-2 text-blue-600 hover:text-blue-800 active:text-blue-900 text-sm font-medium flex items-center gap-1 transition-colors touch-manipulation relative z-10"
-                  style={{ touchAction: 'manipulation', minHeight: '44px', padding: '8px 0', WebkitTapHighlightColor: 'transparent' }}
                 >
                   {expanded ? (<><ChevronUp className="w-4 h-4" />收起</>) : (<><ChevronDown className="w-4 h-4" />展开查看更多</>)}
                 </button>
@@ -319,7 +350,7 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
             </div>
             <div className="flex items-center justify-between text-xs text-gray-500">
               <div className="flex items-center gap-4">
-                <span>来源: {prompt.platform || '未知'}</span>
+                <span>来源: {getSourceDisplay()}</span>
               </div>
               <span>{new Date(prompt.createdAt).toLocaleDateString()}</span>
             </div>
