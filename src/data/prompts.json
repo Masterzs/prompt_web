@@ -4,7 +4,7 @@
     "title": "批判性思维（反驳者模式）",
     "content": "我将提出一个观点：{观点}。\n\n请你扮演一位拥有批判性思维的辩论对手：\n1. 不要附和我的观点。\n2. 寻找我逻辑中的漏洞、幸存者偏差或数据谬误。\n3. 提出 3 个尖锐的反驳论点。\n4. 提供一个与之相反但也有道理的视角（Counter-intuitive perspective）。",
     "description": "用于打磨观点和深化思考的 Prompt，常出现在知识类推主的分享中，帮助打破回声室效应。",
-    "platform": "twitter",
+    "platform": "twitter.com",
     "category": "business",
     "tags": [
       "批判性思维",
@@ -25,7 +25,7 @@
     "title": "结构化长文总结（TL;DR）",
     "content": "请阅读提供的文章，并按照以下结构生成摘要：\n\n1. **一句话核心**：用不超过 50 字概括文章最核心的观点。\n2. **关键论点（Key Takeaways）**：列出 3-5 个支撑核心观点的要点，使用无序列表。\n3. **精彩引语**：摘录文中 1-2 句最发人深省的原话。\n4. **行动建议**：如果是干货类文章，总结出读者可以立即执行的步骤。\n\n文章内容：{内容}",
     "description": "高效阅读必备，类似于 Twitter 上流行的 Thread 总结风格，快速提取高价值信息。",
-    "platform": "twitter",
+    "platform": "twitter.com",
     "category": "productivity",
     "tags": [
       "行动建议",
@@ -46,7 +46,7 @@
     "title": "小红书爆款文案生成（归藏版）",
     "content": "你是一名小红书爆款写作专家，请根据我提供的主题 {主题}，创作一篇小红书笔记。\n\n要求：\n1. 标题：采用二极管标题法，吸引眼球，包含爆款关键词，且必须包含 Emoji。\n2. 正文：采用“痛点-解决方案-效果展示”的结构，语气亲切活泼（集美们/家人们），多用 Emoji（🌟📌💡）。\n3. 标签：在文末添加 5-8 个高热度标签（Hashtags）。\n4. 排版：分段清晰，使用列表符号，易于手机阅读。\n\n请确保内容具有极强的种草属性。",
     "description": "归藏分享的高频使用模板，专门针对小红书算法优化，强调 Emoji 的视觉密度和情绪化表达。",
-    "platform": "xiaohongshu",
+    "platform": "twitter.com",
     "category": "marketing",
     "tags": [
       "案生成",
@@ -68,7 +68,7 @@
     "title": "不可能三角（既要又要还要）",
     "content": ";; 作者: 李继刚\n;; 核心思想：生活中充满了权衡（Trade-off），所谓“既要又要还要”往往是妄念。\n\n(defun 不可能三角 (用户输入)\n  \"三角的三个顶点是互斥的, 连接中心是妄念\"\n  (let (三角要素 (挖掘互斥要素 用户输入))\n    (SVG-Card 三角要素)))",
     "description": "李继刚的另一个神级 Prompt，用几何图形直观展示事物间的矛盾与权衡，极具哲学意味。",
-    "platform": "twitter",
+    "platform": "twitter.com",
     "category": "creative",
     "tags": [
       "三角要素",
@@ -90,7 +90,7 @@
     "title": "汉语新解 · 毒舌卡片生成器",
     "content": ";; 作者: 李继刚\n;; 版本: 0.1\n;; 模型: Claude Sonnet\n;; 用途: 将一个汉语词汇进行全新角度的解释\n\n(defun 新汉语老师 (用户输入)\n  \"你会用一个特殊视角来解释一个词汇\"\n  (let (解释 (精练表达\n              (隐喻 (一针见血 (辛辣讽刺 (抓住本质 用户输入))))))\n    (few-shots\n     (委婉 \"刺向他人时, 决定在剑刃上撒上止痛药。\")\n     (剥削 \"富人说: 所有的钱都是我的, 但你可以分期付款。\")\n     (加班 \"一种在下班时间进行的, 旨在证明自己没有效率的行为。\"))\n    (SVG-Card 解释)))",
     "description": "李继刚大神的现象级提示词（Lisp 版本），能将普通词汇转化为充满讽刺与洞见的 SVG 卡片，风靡全网。",
-    "platform": "twitter",
+    "platform": "twitter.com",
     "category": "creative",
     "tags": [
       "汉语新解",
@@ -113,7 +113,7 @@
     "title": "Midjourney 极简摄影风格生成",
     "content": "Subject: {主体}\nAction: {动作}\nContext: {环境}\nLighting: Natural window light, soft shadows\nStyle: Minimalist photography, clean composition, negative space, high resolution, shot on Hasselblad, 8k\nAspect Ratio: --ar 3:4\nParameters: --stylize 250 --v 6.0",
     "description": "归藏等设计类博主推崇的结构化 MJ 提示词，去除了冗余的咒语，回归摄影本质。",
-    "platform": "twitter",
+    "platform": "twitter.com",
     "category": "drawing",
     "tags": [
       "动作",
@@ -136,7 +136,7 @@
     "title": "代码解释器（给初级工程师讲课）",
     "content": "你是一位资深的软件架构师（10年+经验），现在需要给刚入职的初级工程师解释这段代码。\n\n代码片段：\n{代码}\n\n要求：\n1. 先用一句话概括这段代码的核心功能。\n2. 逐行或逐块解释关键逻辑，不要照本宣科，要解释“为什么这么写”（Why）而不仅仅是“是什么”（What）。\n3. 指出这段代码中使用了什么设计模式或最佳实践。\n4. 如果有潜在的性能坑或安全隐患，请温馨提示。",
     "description": "受 Twitter 技术圈（如宝玉、Hacker News）启发的代码解释 Prompt，强调“Why”而非简单的翻译代码。",
-    "platform": "github",
+    "platform": "twitter.com",
     "category": "code",
     "tags": [
       "设计",
@@ -159,7 +159,7 @@
     "title": "英文口语陪练（雅思/日常）",
     "content": "You are my English speaking practice partner. \n\nGoal: Help me improve my spoken English to a native-like level.\nRules:\n1. Ask me a question about {Topic} to start the conversation.\n2. Wait for my answer.\n3. After I answer, correct my grammar/vocabulary mistakes specifically.\n4. Give me a 'Better Version' of what I said (more natural/idiomatic).\n5. Then ask a follow-up question.\n\nLet's start.",
     "description": "语言学习圈（如宝玉曾提及的语言学习方法）常用的交互式 Prompt，重点在于“纠错”和“地道表达重述”。",
-    "platform": "education",
+    "platform": "twitter.com",
     "category": "education",
     "tags": [
       "雅思",
@@ -181,7 +181,7 @@
     "title": "技术文章润色与风格化",
     "content": "你是一位技术博客主编。请帮我润色以下技术文章片段。\n\n目标：\n1. 修正语法错误和错别字。\n2. 优化句子结构，使其更简洁有力（Plain English 原则）。\n3. 调整语气，使其既专业又平易近人（类似 Paul Graham 的随笔风格）。\n4. 如果有模糊不清的逻辑，请指出来。\n\n待润色内容：\n{内容}",
     "description": "基于宝玉和 Twitter 技术圈常用的润色思路整理，旨在将草稿提升为高质量的技术博客。",
-    "platform": "twitter",
+    "platform": "twitter.com",
     "category": "writing",
     "tags": [
       "与风格化",
@@ -204,7 +204,7 @@
     "title": "科技文章高质量翻译（宝玉版）",
     "content": "你是一位精通简体中文的专业翻译，曾参与《纽约时报》和《经济学人》中文版的翻译工作，因此你特别擅长将英文科技、经济类文章翻译成流畅、通俗易懂的简体中文。\n\n规则：\n1. 翻译时要准确传达原文的事实和背景。\n2. 保留特定的英文术语、数字或人名，并在其前后加上空格，例如：\"生成式 AI 产品\"。\n3. 分三步进行：\n   - 第一步：直译，不遗漏任何信息。\n   - 第二步：意译，根据中文表达习惯，调整语序和用词，使其更自然流畅。\n   - 第三步：输出最终翻译结果，不包含任何解释说明。\n\n现在请翻译以下内容：\n{内容}",
     "description": "宝玉（Baoyu）经典的“三步翻译法”，解决了机器翻译“翻译腔”重的问题，适合翻译长难技术文章。",
-    "platform": "twitter",
+    "platform": "twitter.com",
     "category": "writing",
     "tags": [
       "产品",

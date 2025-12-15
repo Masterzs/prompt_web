@@ -143,9 +143,15 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
 
   // 移动端专用的触摸处理函数
   const handleTouchExpand = (e: React.TouchEvent) => {
-    e.preventDefault()
+    // 不阻止默认行为，让浏览器正常处理
     e.stopPropagation()
-    // 直接更新状态，不依赖事件对象
+    // 直接更新状态
+    setExpanded(prev => !prev)
+  }
+  
+  // 处理点击事件（兼容桌面和移动端）
+  const handleClickExpand = (e: React.MouseEvent | React.TouchEvent) => {
+    e.stopPropagation()
     setExpanded(prev => !prev)
   }
 
@@ -161,7 +167,13 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
     if (hasVideo) {
       const videoSrc = resolvedVideos[0]
       return (
-        <div className="absolute inset-0 [backface-visibility:hidden]">
+        <div 
+          className="absolute inset-0 [backface-visibility:hidden]"
+          style={{
+            touchAction: 'pan-y pan-x',
+            WebkitOverflowScrolling: 'touch'
+          }}
+        >
           <video
             className="w-full h-full object-cover"
             src={videoSrc}
@@ -170,6 +182,10 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
             muted
             playsInline
             poster={displayImages[0]}
+            style={{
+              touchAction: 'pan-y pan-x',
+              pointerEvents: 'auto'
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent"></div>
           <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
@@ -207,7 +223,13 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
     }
 
     return (
-      <div className="absolute inset-0 [backface-visibility:hidden]">
+      <div 
+        className="absolute inset-0 [backface-visibility:hidden]"
+        style={{
+          touchAction: 'pan-y pan-x',
+          WebkitOverflowScrolling: 'touch'
+        }}
+      >
         {coverImage && (
           <img
             src={coverImage}
@@ -216,7 +238,17 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
             loading={isHero ? 'eager' : 'lazy'}
             fetchPriority={isHero ? 'high' : 'low'}
             decoding="async"
+            draggable="false"
             onError={handleImageError}
+            onDragStart={(e) => e.preventDefault()}
+            style={{
+              touchAction: 'pan-y pan-x',
+              userSelect: 'none',
+              WebkitUserSelect: 'none',
+              pointerEvents: 'auto',
+              WebkitTouchCallout: 'none',
+              WebkitUserDrag: 'none'
+            }}
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent"></div>
@@ -311,11 +343,30 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
 
   return (
     <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 overflow-hidden">
-      <div className="relative h-56 sm:h-60 md:h-56 lg:h-60" style={{ perspective: 1000 }}>
-        <div className={`h-full transition-transform duration-500 [transform-style:preserve-3d] ${flipped ? 'rotate-y-180' : ''}`}>
+      <div 
+        className="relative h-56 sm:h-60 md:h-56 lg:h-60" 
+        style={{ 
+          perspective: 1000,
+          touchAction: 'pan-y pan-x'
+        }}
+      >
+        <div 
+          className={`h-full transition-transform duration-500 [transform-style:preserve-3d] ${flipped ? 'rotate-y-180' : ''}`}
+          style={{
+            touchAction: 'pan-y pan-x'
+          }}
+        >
           {renderMedia()}
 
-          <div className="absolute inset-0 bg-white p-4 sm:p-6 overflow-y-auto [backface-visibility:hidden] rotate-y-180" style={{ zIndex: 2, pointerEvents: 'auto' }}>
+          <div 
+            className="absolute inset-0 bg-white p-4 sm:p-6 overflow-y-auto [backface-visibility:hidden] rotate-y-180" 
+            style={{ 
+              zIndex: 2, 
+              pointerEvents: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              touchAction: 'pan-y'
+            }}
+          >
             <div className="flex items-start justify-between mb-3">
               <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 flex-1">{prompt.title}</h3>
               <span className="ml-3 px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full whitespace-nowrap">{prompt.category}</span>
@@ -327,16 +378,20 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
               </div>
               {prompt.content.length > 200 && (
                 <button 
-                  onClick={toggleExpanded}
+                  onClick={handleClickExpand}
                   onTouchStart={handleTouchExpand}
                   className="mt-2 text-blue-600 hover:text-blue-800 active:text-blue-900 text-sm font-medium flex items-center gap-1 transition-colors touch-manipulation relative z-50 cursor-pointer"
                   style={{ 
                     touchAction: 'manipulation', 
                     minHeight: '44px', 
-                    padding: '8px 0', 
+                    minWidth: '120px',
+                    padding: '8px 12px', 
                     WebkitTapHighlightColor: 'transparent',
                     pointerEvents: 'auto',
-                    position: 'relative'
+                    position: 'relative',
+                    userSelect: 'none',
+                    WebkitUserSelect: 'none',
+                    isolation: 'isolate'
                   }}
                 >
                   {expanded ? (<><ChevronUp className="w-4 h-4" />收起</>) : (<><ChevronDown className="w-4 h-4" />展开查看更多</>)}
@@ -350,7 +405,7 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
             </div>
             <div className="flex items-center justify-between text-xs text-gray-500">
               <div className="flex items-center gap-4">
-                <span>来源: {getSourceDisplay()}</span>
+                <span>来源: {prompt.platform || '未知'}</span>
               </div>
               <span>{new Date(prompt.createdAt).toLocaleDateString()}</span>
             </div>
