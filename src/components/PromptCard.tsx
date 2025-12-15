@@ -133,14 +133,6 @@ export default function PromptCard({ prompt, index = 0 }: PromptCardProps) {
     window.open(prompt.sourceUrl, '_blank', 'noopener,noreferrer')
   }
 
-  const toggleExpanded = (e?: React.MouseEvent | React.TouchEvent) => {
-    if (e) {
-      e.preventDefault()
-      e.stopPropagation()
-    }
-    setExpanded(!expanded)
-  }
-
   // 移动端专用的触摸开始处理函数（使用事件捕获）
   const handleTouchStartExpand = (e: React.TouchEvent) => {
     e.stopPropagation()
