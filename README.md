@@ -1,6 +1,7 @@
 # Prompt Hub
 
 一个提示词管理和搜索平台，支持多种数据源和智能搜索。
+预览网址：https://masterzs.github.io/prompt_web/
 
 ## 功能特性
 
